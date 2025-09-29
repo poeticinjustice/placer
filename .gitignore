@@ -118,3 +118,16 @@ Thumbs.db
 build/
 dist/
 out/
+
+# Vite cache and build files
+client/.vite/
+.vite/
+*/.vite/
+
+# Development cache files
+*.tsbuildinfo
+.eslintcache
+
+# Temporary backup files
+*_Fixed.*
+*_Backup.*
