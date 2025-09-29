@@ -77,6 +77,54 @@
   letter-spacing: 0.5px;
 }
 
+/* Admin Actions */
+.admin-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.action-card {
+  background-color: var(--background-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-blue);
+  text-decoration: none;
+}
+
+.action-card .icon {
+  width: 40px;
+  height: 40px;
+  color: var(--primary-blue);
+  margin-bottom: var(--spacing-sm);
+}
+
+.action-card h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--label-primary);
+  margin: 0;
+}
+
+.action-card p {
+  color: var(--label-secondary);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
 /* Users List */
 .users-list {
   display: flex;

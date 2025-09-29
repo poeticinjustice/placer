@@ -130,6 +130,38 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+router.get('/admin/all', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 100
+    } = req.query
+
+    const skip = (page - 1) * limit
+
+    const users = await User.find({ role: 'user' })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .select('-password')
+
+    const total = await User.countDocuments({ role: 'user' })
+
+    res.json({
+      users,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    })
+  } catch (error) {
+    console.error('Get all users error:', error)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
 router.get('/admin/pending', authenticate, requireAdmin, async (req, res) => {
   try {
     const {

@@ -13,6 +13,7 @@ import PlaceDetails from './pages/PlaceDetails/PlaceDetails'
 import CreatePlace from './pages/CreatePlace/CreatePlace'
 import Profile from './pages/Profile/Profile'
 import AdminDashboard from './pages/Admin/AdminDashboard'
+import UserManagement from './pages/Admin/UserManagement'
 import LoadingSpinner from './components/UI/LoadingSpinner'
 
 function App() {
@@ -31,6 +32,11 @@ function App() {
 
   const isAdmin = user?.role === 'admin'
 
+  // Debug logging
+  console.log('App.jsx - User data:', user)
+  console.log('App.jsx - isAdmin:', isAdmin)
+  console.log('App.jsx - user.role:', user?.role)
+
   return (
     <div className="App">
       <Routes>
@@ -43,7 +49,27 @@ function App() {
           <Route path="profile" element={isAuthenticated ? <Profile /> : <Navigate to="/auth" />} />
           <Route
             path="admin"
-            element={isAuthenticated && isAdmin ? <AdminDashboard /> : <Navigate to="/" />}
+            element={
+              !isAuthenticated ? (
+                <Navigate to="/auth" />
+              ) : !isAdmin ? (
+                <Navigate to="/dashboard" />
+              ) : (
+                <AdminDashboard />
+              )
+            }
+          />
+          <Route
+            path="admin/users"
+            element={
+              !isAuthenticated ? (
+                <Navigate to="/auth" />
+              ) : !isAdmin ? (
+                <Navigate to="/dashboard" />
+              ) : (
+                <UserManagement />
+              )
+            }
           />
         </Route>
       </Routes>

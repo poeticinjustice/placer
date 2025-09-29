@@ -2,23 +2,35 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout } from '../../store/slices/authSlice'
-import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline'
+import { Bars3Icon, XMarkIcon, UserCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import './Header.css'
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const { isAuthenticated, user } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  // Debug logging
+  console.log('Header.jsx - isAuthenticated:', isAuthenticated)
+  console.log('Header.jsx - user:', user)
+  console.log('Header.jsx - user.role:', user?.role)
 
   const handleLogout = () => {
     dispatch(logout())
     navigate('/')
     setIsMobileMenuOpen(false)
+    setIsAccountMenuOpen(false)
   }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
+    setIsAccountMenuOpen(false)
+  }
+
+  const toggleAccountMenu = () => {
+    setIsAccountMenuOpen(!isAccountMenuOpen)
   }
 
   return (
@@ -43,11 +55,14 @@ const Header = () => {
                   {user?.avatar ? (
                     <img src={user.avatar} alt="Profile" className="avatar" />
                   ) : (
-                    <UserCircleIcon className="w-8 h-8" />
+                    <UserCircleIcon className="user-icon" />
                   )}
                 </button>
                 <div className="user-menu-dropdown">
                   <Link to="/profile" className="dropdown-item">Profile</Link>
+                  {user?.role === 'admin' && (
+                    <Link to="/admin" className="dropdown-item admin-dropdown-item">Admin Dashboard</Link>
+                  )}
                   <button onClick={handleLogout} className="dropdown-item">
                     Sign Out
                   </button>
@@ -83,17 +98,36 @@ const Header = () => {
               <Link to="/create" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
                 Add Place
               </Link>
-              {user?.role === 'admin' && (
-                <Link to="/admin" className="mobile-nav-link admin-link" onClick={() => setIsMobileMenuOpen(false)}>
-                  Admin
-                </Link>
-              )}
-              <Link to="/profile" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-                Profile
-              </Link>
-              <button onClick={handleLogout} className="mobile-nav-link text-left">
-                Sign Out
-              </button>
+
+              {/* Accordion Account Menu */}
+              <div className="mobile-accordion">
+                <button className="mobile-accordion-trigger" onClick={toggleAccountMenu}>
+                  <span className="accordion-title">
+                    {user?.avatar ? (
+                      <img src={user.avatar} alt="Profile" className="mobile-avatar" />
+                    ) : (
+                      <UserCircleIcon className="mobile-avatar-icon" />
+                    )}
+                    Account
+                  </span>
+                  <ChevronDownIcon className={`accordion-icon ${isAccountMenuOpen ? 'open' : ''}`} />
+                </button>
+                {isAccountMenuOpen && (
+                  <div className="mobile-accordion-content">
+                    <Link to="/profile" className="mobile-accordion-link" onClick={() => setIsMobileMenuOpen(false)}>
+                      Profile
+                    </Link>
+                    {user?.role === 'admin' && (
+                      <Link to="/admin" className="mobile-accordion-link admin-mobile-link" onClick={() => setIsMobileMenuOpen(false)}>
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <button onClick={handleLogout} className="mobile-accordion-link logout-btn">
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
             <Link to="/auth" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>

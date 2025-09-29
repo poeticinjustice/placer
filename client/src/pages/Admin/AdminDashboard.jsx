@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import {
   UserIcon,
@@ -133,6 +134,14 @@ const AdminDashboard = () => {
             <div className="stat-number">{pagination.total}</div>
             <div className="stat-label">Pending Approvals</div>
           </div>
+        </div>
+
+        <div className="admin-actions">
+          <Link to="/admin/users" className="action-card">
+            <UserIcon className="icon" />
+            <h3>User Management</h3>
+            <p>View, approve, and manage all users</p>
+          </Link>
         </div>
 
         {pendingUsers.length === 0 ? (
