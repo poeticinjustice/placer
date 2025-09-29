@@ -46,13 +46,11 @@
   font-weight: 600;
 }
 
-.places-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
+.featured-places-grid {
   margin-bottom: var(--spacing-xl);
 }
 
+/* Legacy place-card styles - will be removed after full migration */
 .place-card {
   background-color: var(--background-tertiary);
   border-radius: var(--radius-lg);

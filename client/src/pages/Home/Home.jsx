@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { fetchPlaces } from '../../store/slices/placesSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import ResponsiveGrid from '../../components/Gallery/ResponsiveGrid'
+import PlaceCard from '../../components/Gallery/PlaceCard'
 import './Home.css'
 
 const Home = () => {
@@ -35,45 +37,33 @@ const Home = () => {
       <section className="featured-places">
         <div className="container">
           <h2>Featured Places</h2>
-          {places.length > 0 ? (
-            <div className="places-grid">
-              {places.map((place) => (
-                <Link
-                  key={place._id}
-                  to={`/place/${place._id}`}
-                  className="place-card"
-                >
-                  {place.photos[0] && (
-                    <img
-                      src={place.photos[0].url}
-                      alt={place.name}
-                      className="place-image"
-                    />
-                  )}
-                  <div className="place-content">
-                    <h3>{place.name}</h3>
-                    <p>{place.location.address}</p>
-                    <div className="place-meta">
-                      <span className="author">
-                        {place.isAnonymous ? 'Anonymous' :
-                         `${place.author.firstName} ${place.author.lastName || ''}`}
-                      </span>
-                      <span className="views">{place.views} views</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <p>No places found. Be the first to share a place!</p>
-              {isAuthenticated && (
-                <Link to="/create" className="btn btn-primary">
-                  Add Your First Place
-                </Link>
-              )}
-            </div>
-          )}
+          <ResponsiveGrid
+            items={places}
+            renderItem={(place) => (
+              <PlaceCard
+                place={place}
+                variant="default"
+                showAuthor={true}
+                showStats={true}
+                showDescription={false}
+              />
+            )}
+            layout="grid"
+            columns={{ mobile: 2, tablet: 3, desktop: 4 }}
+            gap="lg"
+            className="featured-places-grid"
+            loading={isLoading}
+            emptyState={
+              <div className="empty-state">
+                <p>No places found. Be the first to share a place!</p>
+                {isAuthenticated && (
+                  <Link to="/create" className="btn btn-primary">
+                    Add Your First Place
+                  </Link>
+                )}
+              </div>
+            }
+          />
         </div>
       </section>
     </div>

@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchPlaces, setViewMode } from '../../store/slices/placesSlice'
 import Map from '../../components/Map/Map'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import ResponsiveGrid from '../../components/Gallery/ResponsiveGrid'
+import PlaceCard from '../../components/Gallery/PlaceCard'
 import {
   MapIcon,
   Squares2X2Icon,
   ListBulletIcon,
   PlusIcon,
-  FunnelIcon
+  FunnelIcon,
+  ViewColumnsIcon
 } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
 import './Dashboard.css'
@@ -29,6 +32,7 @@ const Dashboard = () => {
 
   const viewModeOptions = [
     { key: 'gallery', icon: Squares2X2Icon, label: 'Gallery' },
+    { key: 'masonry', icon: ViewColumnsIcon, label: 'Masonry' },
     { key: 'list', icon: ListBulletIcon, label: 'List' },
     { key: 'map', icon: MapIcon, label: 'Map' }
   ]
@@ -65,9 +69,55 @@ const Dashboard = () => {
   )
 
   const renderGalleryView = () => (
-    <div className="places-gallery">
-      {places.map(renderPlaceCard)}
-    </div>
+    <ResponsiveGrid
+      items={places}
+      renderItem={(place) => (
+        <PlaceCard
+          place={place}
+          variant="default"
+          showAuthor={false}
+          showStats={true}
+          showDescription={true}
+        />
+      )}
+      layout="grid"
+      columns={{ mobile: 2, tablet: 3, desktop: 4 }}
+      gap="lg"
+      className="dashboard-places-grid"
+      loading={isLoading}
+      emptyState={
+        <div className="empty-state">
+          <h3>No places yet</h3>
+          <p>Start discovering and sharing amazing places!</p>
+        </div>
+      }
+    />
+  )
+
+  const renderMasonryView = () => (
+    <ResponsiveGrid
+      items={places}
+      renderItem={(place) => (
+        <PlaceCard
+          place={place}
+          variant="compact"
+          showAuthor={false}
+          showStats={true}
+          showDescription={true}
+        />
+      )}
+      layout="masonry"
+      columns={{ mobile: 2, tablet: 3, desktop: 4 }}
+      gap="md"
+      className="dashboard-places-masonry"
+      loading={isLoading}
+      emptyState={
+        <div className="empty-state">
+          <h3>No places yet</h3>
+          <p>Start discovering and sharing amazing places!</p>
+        </div>
+      }
+    />
   )
 
   const renderListView = () => (
@@ -144,6 +194,8 @@ const Dashboard = () => {
         return renderListView()
       case 'map':
         return renderMapView()
+      case 'masonry':
+        return renderMasonryView()
       default:
         return renderGalleryView()
     }
