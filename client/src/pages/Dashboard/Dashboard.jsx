@@ -180,7 +180,7 @@ const Dashboard = () => {
           <h3>No places found</h3>
           <p>Be the first to share a special place with the community!</p>
           {user?.isApproved && (
-            <Link to="/create-place" className="create-first-place-btn">
+            <Link to="/create" className="create-first-place-btn">
               <PlusIcon className="btn-icon" />
               Add Your First Place
             </Link>
@@ -216,7 +216,7 @@ const Dashboard = () => {
             </div>
 
             {user?.isApproved && (
-              <Link to="/create-place" className="create-place-btn">
+              <Link to="/create" className="create-place-btn">
                 <PlusIcon className="btn-icon" />
                 Add Place
               </Link>

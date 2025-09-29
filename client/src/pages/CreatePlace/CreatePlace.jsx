@@ -91,26 +91,24 @@ const CreatePlace = () => {
 
     // Create FormData for file upload
     const submitData = new FormData()
-    submitData.append('title', formData.title)
+    submitData.append('name', formData.title) // Server expects 'name'
     submitData.append('description', formData.description)
     submitData.append('category', formData.category)
     submitData.append('tags', formData.tags)
 
-    // Add location data
-    submitData.append('location', JSON.stringify({
-      type: 'Point',
-      coordinates: formData.location.coordinates,
-      address: formData.location.address
-    }))
+    // Add location data in the format server expects
+    submitData.append('location[address]', formData.location.address)
+    submitData.append('location[coordinates][type]', 'Point')
+    submitData.append('location[coordinates][coordinates]', JSON.stringify(formData.location.coordinates))
 
-    // Add images
+    // Add images (server expects this as files, not 'photos')
     imageFiles.forEach((file) => {
-      submitData.append('images', file)
+      submitData.append('photos', file) // Server expects 'photos'
     })
 
     try {
       const result = await dispatch(createPlace(submitData)).unwrap()
-      navigate(`/places/${result.place._id}`)
+      navigate(`/place/${result.place._id}`)
     } catch (error) {
       console.error('Error creating place:', error)
     }

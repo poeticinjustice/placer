@@ -24,7 +24,7 @@ A MERN stack application for discovering and sharing places with photos, maps, a
 ### Phase 2 (In Progress)
 - ✅ Leaflet maps integration with geolocation
 - ✅ User profile management
-- 🔲 Responsive gallery views (2 columns mobile, more on desktop)
+- ✅ Responsive gallery views (2 columns mobile, more on desktop)
 - 🔲 Search and filtering functionality
 - 🔲 Comments system
 - 🔲 Complete place creation and editing forms
