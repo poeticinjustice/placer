@@ -280,9 +280,9 @@ const Profile = () => {
             <div className="places-grid">
               {userPlaces.map((place) => (
                 <div key={place._id} className="place-card">
-                  {place.images && place.images.length > 0 && (
+                  {place.photos && place.photos.length > 0 && (
                     <div className="place-image">
-                      <img src={place.images[0]} alt={place.title} />
+                      <img src={place.photos[0].url} alt={place.title} />
                     </div>
                   )}
                   <div className="place-content">

@@ -55,9 +55,9 @@ const Dashboard = () => {
 
   const renderPlaceCard = (place) => (
     <div key={place._id} className="place-card">
-      {place.images && place.images.length > 0 && (
+      {place.photos && place.photos.length > 0 && (
         <div className="place-image">
-          <img src={place.images[0]} alt={place.title} />
+          <img src={place.photos[0].url} alt={place.title} />
         </div>
       )}
       <div className="place-content">
@@ -140,9 +140,9 @@ const Dashboard = () => {
     <div className="places-list">
       {places.map((place) => (
         <div key={place._id} className="place-list-item">
-          {place.images && place.images.length > 0 && (
+          {place.photos && place.photos.length > 0 && (
             <div className="list-item-image">
-              <img src={place.images[0]} alt={place.title} />
+              <img src={place.photos[0].url} alt={place.title} />
             </div>
           )}
           <div className="list-item-content">

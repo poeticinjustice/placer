@@ -1,21 +1,24 @@
+import dotenv from 'dotenv'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+// Configure environment variables FIRST, before any other imports
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+dotenv.config({ path: path.join(__dirname, '../.env') })
+
+// Now import everything else after environment is loaded
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import compression from 'compression'
 import rateLimit from 'express-rate-limit'
-import dotenv from 'dotenv'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import connectDB from './config/database.js'
 import authRoutes from './routes/auth.js'
 import placeRoutes from './routes/places.js'
 import userRoutes from './routes/users.js'
 import errorHandler from './middleware/errorHandler.js'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-dotenv.config({ path: path.join(__dirname, '../.env') })
 
 const app = express()
 const PORT = process.env.PORT || 8000

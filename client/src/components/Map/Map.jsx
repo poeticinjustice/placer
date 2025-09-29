@@ -166,9 +166,9 @@ const Map = ({
                   {place.location?.address && (
                     <p className="address">{place.location.address}</p>
                   )}
-                  {place.images && place.images.length > 0 && (
+                  {place.photos && place.photos.length > 0 && (
                     <img
-                      src={place.images[0]}
+                      src={place.photos[0].url}
                       alt={place.title}
                       className="popup-image"
                     />

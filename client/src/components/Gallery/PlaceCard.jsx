@@ -37,17 +37,17 @@ const PlaceCard = ({
     >
       {/* Image */}
       <div className="place-card__image">
-        {place.images && place.images.length > 0 ? (
+        {place.photos && place.photos.length > 0 ? (
           <>
             <img
-              src={place.images[0]}
+              src={place.photos[0].url}
               alt={place.title || place.name}
               loading="lazy"
               className="place-image"
             />
-            {place.images.length > 1 && (
+            {place.photos.length > 1 && (
               <div className="place-card__image-count">
-                +{place.images.length - 1}
+                +{place.photos.length - 1}
               </div>
             )}
           </>
