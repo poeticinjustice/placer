@@ -21,13 +21,13 @@ A MERN stack application for discovering and sharing places with photos, maps, a
 - ✅ Place/post models with CRUD operations
 - ✅ Mobile-first iOS-style UI components
 
-### Phase 2 (Pending)
-- 🔲 Leaflet maps integration with geolocation
+### Phase 2 (In Progress)
+- ✅ Leaflet maps integration with geolocation
+- ✅ User profile management
 - 🔲 Responsive gallery views (2 columns mobile, more on desktop)
 - 🔲 Search and filtering functionality
 - 🔲 Comments system
 - 🔲 Complete place creation and editing forms
-- 🔲 User profile management
 - 🔲 Admin dashboard for user approvals
 
 ### Phase 3 (Future)
@@ -102,6 +102,13 @@ curl http://localhost:8000/health
 - Auto-login after successful signup
 - New accounts require admin approval before posting
 - Users can update profiles before approval
+
+### Profile Management
+- View and edit personal profile information (name, bio, location, avatar)
+- Upload profile pictures with Cloudinary integration
+- Display account approval status
+- View personal places collection with status indicators
+- Responsive design with iOS-style interface
 
 ### Admin Features
 - Approve/reject user accounts

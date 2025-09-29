@@ -6,9 +6,9 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const initialState = {
   user: null,
   token: localStorage.getItem('token'),
-  isLoading: false,
+  isLoading: !!localStorage.getItem('token'), // Loading if token exists
   error: null,
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem('token'), // Assume authenticated if token exists
 }
 
 export const signup = createAsyncThunk(
@@ -56,6 +56,33 @@ export const getCurrentUser = createAsyncThunk(
     } catch (error) {
       localStorage.removeItem('token')
       return rejectWithValue(error.response.data.message)
+    }
+  }
+)
+
+export const updateUserProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async (profileData, { rejectWithValue, getState }) => {
+    try {
+      const token = getState().auth.token
+      if (!token) return rejectWithValue('No token found')
+
+      const formData = new FormData()
+      Object.keys(profileData).forEach(key => {
+        if (profileData[key] !== null && profileData[key] !== undefined) {
+          formData.append(key, profileData[key])
+        }
+      })
+
+      const response = await axios.put(`${API_URL}/api/users/profile`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Update failed')
     }
   }
 )
@@ -118,6 +145,18 @@ const authSlice = createSlice({
         state.isLoading = false
         state.token = null
         state.isAuthenticated = false
+      })
+      .addCase(updateUserProfile.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.user = action.payload.user
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
       })
   },
 })
