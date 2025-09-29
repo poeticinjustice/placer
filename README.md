@@ -21,14 +21,14 @@ A MERN stack application for discovering and sharing places with photos, maps, a
 - ✅ Place/post models with CRUD operations
 - ✅ Mobile-first iOS-style UI components
 
-### Phase 2 (In Progress)
+### Phase 2 (Completed)
 - ✅ Leaflet maps integration with geolocation
 - ✅ User profile management
 - ✅ Responsive gallery views (2 columns mobile, more on desktop)
-- 🔲 Search and filtering functionality
-- 🔲 Comments system
-- 🔲 Complete place creation and editing forms
-- 🔲 Admin dashboard for user approvals
+- ✅ Search and filtering functionality
+- ✅ Place creation and editing forms
+- ✅ Admin dashboard for user approvals
+- ✅ Comments system
 
 ### Phase 3 (Future)
 - 🔲 Real-time features
@@ -44,13 +44,13 @@ A MERN stack application for discovering and sharing places with photos, maps, a
 - Cloudinary account
 
 ### Environment Variables
-The `.env` file is already configured with:
+Create a `.env` file in the root directory with the following variables:
 ```
-MONGO_URI=mongodb+srv://...
-CLOUDINARY_CLOUD_NAME=***REMOVED***
-CLOUDINARY_API_KEY=***REMOVED***
-CLOUDINARY_API_SECRET=***REMOVED***
-JWT_SECRET=your-super-secret-jwt-key-here
+MONGO_URI=your_mongodb_connection_string
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+JWT_SECRET=your_jwt_secret_key
 PORT=8000
 NODE_ENV=development
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3003

@@ -341,4 +341,33 @@ router.post('/:id/comments', authenticate, [
   }
 })
 
+router.delete('/:id/comments/:commentId', authenticate, async (req, res) => {
+  try {
+    const place = await Place.findById(req.params.id)
+
+    if (!place) {
+      return res.status(404).json({ message: 'Place not found' })
+    }
+
+    const comment = place.comments.id(req.params.commentId)
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' })
+    }
+
+    // Only comment author or admin can delete
+    if (comment.author.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to delete this comment' })
+    }
+
+    place.comments.pull(req.params.commentId)
+    await place.save()
+
+    res.json({ message: 'Comment deleted successfully' })
+  } catch (error) {
+    console.error('Delete comment error:', error)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
 export default router

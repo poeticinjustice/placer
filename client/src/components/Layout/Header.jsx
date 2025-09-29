@@ -35,6 +35,9 @@ const Header = () => {
             <>
               <Link to="/dashboard" className="nav-link">Dashboard</Link>
               <Link to="/create" className="nav-link">Add Place</Link>
+              {user?.role === 'admin' && (
+                <Link to="/admin" className="nav-link admin-link">Admin</Link>
+              )}
               <div className="user-menu">
                 <button className="user-menu-trigger">
                   {user?.avatar ? (
@@ -80,6 +83,11 @@ const Header = () => {
               <Link to="/create" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
                 Add Place
               </Link>
+              {user?.role === 'admin' && (
+                <Link to="/admin" className="mobile-nav-link admin-link" onClick={() => setIsMobileMenuOpen(false)}>
+                  Admin
+                </Link>
+              )}
               <Link to="/profile" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
                 Profile
               </Link>

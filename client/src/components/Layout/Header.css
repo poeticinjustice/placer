@@ -45,6 +45,21 @@
   text-decoration: none;
 }
 
+.admin-link {
+  background: linear-gradient(135deg, var(--system-orange), var(--system-red));
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.admin-link:hover {
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.3);
+}
+
 .user-menu {
   position: relative;
 }
