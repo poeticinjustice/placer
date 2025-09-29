@@ -93,6 +93,44 @@ export const deletePlace = createAsyncThunk(
   }
 )
 
+// Combined search and filter action
+export const searchPlaces = createAsyncThunk(
+  'places/searchPlaces',
+  async (_, { getState, dispatch }) => {
+    const { places } = getState()
+    const { searchQuery, filters } = places
+
+    const searchParams = {}
+
+    if (searchQuery && searchQuery.trim()) {
+      searchParams.search = searchQuery.trim()
+    }
+
+    if (filters.category && filters.category !== 'all') {
+      searchParams.category = filters.category
+    }
+
+    if (filters.location && filters.location.trim()) {
+      // This could be enhanced to get coordinates from the location string
+      searchParams.location = filters.location.trim()
+    }
+
+    if (filters.sortBy) {
+      searchParams.sortBy = filters.sortBy
+    }
+
+    if (filters.sortOrder) {
+      searchParams.sortOrder = filters.sortOrder
+    }
+
+    if (filters.radius) {
+      searchParams.radius = filters.radius
+    }
+
+    return dispatch(fetchPlaces(searchParams))
+  }
+)
+
 const placesSlice = createSlice({
   name: 'places',
   initialState,

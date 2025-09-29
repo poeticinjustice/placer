@@ -25,17 +25,15 @@ const CreatePlace = () => {
   const [imagePreviews, setImagePreviews] = useState([])
 
   const categories = [
-    'Restaurant',
-    'Cafe',
-    'Park',
-    'Museum',
-    'Shopping',
-    'Entertainment',
-    'Historic Site',
-    'Nature',
-    'Beach',
-    'Mountain',
-    'Other'
+    { value: 'restaurant', label: 'Restaurant' },
+    { value: 'attraction', label: 'Attraction' },
+    { value: 'outdoor', label: 'Outdoor' },
+    { value: 'shopping', label: 'Shopping' },
+    { value: 'entertainment', label: 'Entertainment' },
+    { value: 'accommodation', label: 'Accommodation' },
+    { value: 'transport', label: 'Transport' },
+    { value: 'services', label: 'Services' },
+    { value: 'other', label: 'Other' }
   ]
 
   const handleInputChange = (e) => {
@@ -84,6 +82,11 @@ const CreatePlace = () => {
       return
     }
 
+    if (!formData.description.trim()) {
+      alert('Please enter a description for your place')
+      return
+    }
+
     if (!formData.location) {
       alert('Please select a location on the map')
       return
@@ -93,8 +96,16 @@ const CreatePlace = () => {
     const submitData = new FormData()
     submitData.append('name', formData.title) // Server expects 'name'
     submitData.append('description', formData.description)
-    submitData.append('category', formData.category)
-    submitData.append('tags', formData.tags)
+
+    // Only append category if it's not empty (let server use default 'other' if empty)
+    if (formData.category && formData.category.trim()) {
+      submitData.append('category', formData.category)
+    }
+
+    // Only append tags if not empty
+    if (formData.tags && formData.tags.trim()) {
+      submitData.append('tags', formData.tags)
+    }
 
     // Add location data in the format server expects
     submitData.append('location[address]', formData.location.address)
@@ -105,6 +116,12 @@ const CreatePlace = () => {
     imageFiles.forEach((file) => {
       submitData.append('photos', file) // Server expects 'photos'
     })
+
+    // Debug: log what we're sending
+    console.log('FormData being sent:')
+    for (let [key, value] of submitData.entries()) {
+      console.log(key, value)
+    }
 
     try {
       const result = await dispatch(createPlace(submitData)).unwrap()
@@ -176,8 +193,8 @@ const CreatePlace = () => {
                 >
                   <option value="">Select a category</option>
                   {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category}
+                    <option key={category.value} value={category.value}>
+                      {category.label}
                     </option>
                   ))}
                 </select>

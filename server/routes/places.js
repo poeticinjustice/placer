@@ -102,11 +102,34 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
   body('name').trim().notEmpty().withMessage('Place name is required'),
   body('description').trim().notEmpty().withMessage('Description is required'),
   body('location.address').notEmpty().withMessage('Address is required'),
-  body('location.coordinates.coordinates').isArray({ min: 2, max: 2 }).withMessage('Valid coordinates required')
+  body('location.coordinates.coordinates').custom((value) => {
+    if (typeof value === 'string') {
+      try {
+        const coords = JSON.parse(value);
+        if (Array.isArray(coords) && coords.length === 2 &&
+            coords.every(coord => typeof coord === 'number')) {
+          return true;
+        }
+      } catch (e) {
+        throw new Error('Invalid coordinates format');
+      }
+    } else if (Array.isArray(value) && value.length === 2 &&
+               value.every(coord => typeof coord === 'number')) {
+      return true;
+    }
+    throw new Error('Valid coordinates required');
+  })
 ], async (req, res) => {
   try {
+    // Debug: log what server receives
+    console.log('=== CREATE PLACE REQUEST ===')
+    console.log('Body:', req.body)
+    console.log('Files:', req.files)
+    console.log('============================')
+
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array())
       return res.status(400).json({
         message: 'Validation failed',
         errors: errors.array()
@@ -124,10 +147,39 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
       }
     }
 
+    // Process tags if they exist
+    let tags = []
+    if (req.body.tags) {
+      tags = req.body.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+    }
+
+    // Process location coordinates and restructure for MongoDB GeoJSON
+    let processedBody = { ...req.body }
+    if (req.body.location?.coordinates?.coordinates) {
+      let coordinates
+      if (typeof req.body.location.coordinates.coordinates === 'string') {
+        // Parse the coordinates array from string
+        coordinates = JSON.parse(req.body.location.coordinates.coordinates)
+      } else if (Array.isArray(req.body.location.coordinates.coordinates)) {
+        // Use the coordinates array directly
+        coordinates = req.body.location.coordinates.coordinates
+      }
+
+      if (coordinates) {
+        processedBody.location = {
+          address: req.body.location.address,
+          type: 'Point',
+          coordinates: coordinates
+        }
+        console.log('Processed location structure:', processedBody.location)
+      }
+    }
+
     const placeData = {
-      ...req.body,
+      ...processedBody,
       author: req.user._id,
-      photos
+      photos,
+      tags
     }
 
     const place = new Place(placeData)

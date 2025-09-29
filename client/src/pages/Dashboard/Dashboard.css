@@ -461,3 +461,14 @@
     height: 14px;
   }
 }
+
+/* Search Bar */
+.dashboard-search {
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .dashboard-search {
+    margin: 1rem 16px;
+  }
+}

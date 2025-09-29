@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchPlaces, setViewMode } from '../../store/slices/placesSlice'
+import { fetchPlaces, setViewMode, setSearchQuery, setFilters, searchPlaces } from '../../store/slices/placesSlice'
 import Map from '../../components/Map/Map'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import ResponsiveGrid from '../../components/Gallery/ResponsiveGrid'
@@ -14,12 +14,14 @@ import {
   ViewColumnsIcon
 } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
+import SearchBar from '../../components/Search/SearchBar'
+import FilterPanel from '../../components/Search/FilterPanel'
 import './Dashboard.css'
 
 const Dashboard = () => {
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
-  const { places, isLoading, viewMode } = useSelector((state) => state.places)
+  const { places, isLoading, viewMode, searchQuery, filters } = useSelector((state) => state.places)
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
@@ -28,6 +30,20 @@ const Dashboard = () => {
 
   const handleViewModeChange = (mode) => {
     dispatch(setViewMode(mode))
+  }
+
+  const handleSearch = (query) => {
+    dispatch(setSearchQuery(query))
+    dispatch(searchPlaces())
+  }
+
+  const handleFiltersChange = (newFilters) => {
+    dispatch(setFilters(newFilters))
+    dispatch(searchPlaces())
+  }
+
+  const handleCloseFilters = () => {
+    setShowFilters(false)
   }
 
   const viewModeOptions = [
@@ -248,9 +264,27 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Search Bar */}
+        <div className="dashboard-search">
+          <SearchBar
+            onSearch={handleSearch}
+            initialValue={searchQuery}
+            placeholder="Search places by name, description, or location..."
+            className="main-search"
+          />
+        </div>
+
         <div className="dashboard-content">
           {renderContent()}
         </div>
+
+        {/* Filter Panel */}
+        <FilterPanel
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          onClose={handleCloseFilters}
+          isOpen={showFilters}
+        />
       </div>
     </div>
   )
