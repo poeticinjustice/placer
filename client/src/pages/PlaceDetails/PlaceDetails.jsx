@@ -9,7 +9,8 @@ import {
   HeartIcon,
   ArrowLeftIcon,
   UserCircleIcon,
-  PencilIcon
+  PencilIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
@@ -29,6 +30,7 @@ const PlaceDetails = () => {
   const [isLiked, setIsLiked] = useState(false)
   const [likesCount, setLikesCount] = useState(0)
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     fetchPlace()
@@ -95,6 +97,26 @@ const PlaceDetails = () => {
     return place.author._id === user._id || user.role === 'admin'
   }
 
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this place? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      setIsDeleting(true)
+      await axios.delete(`${API_URL}/api/places/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      alert('Place deleted successfully')
+      navigate('/dashboard')
+    } catch (err) {
+      console.error('Error deleting place:', err)
+      alert(err.response?.data?.message || 'Failed to delete place')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   if (isLoading) {
     return <LoadingSpinner />
   }
@@ -124,13 +146,30 @@ const PlaceDetails = () => {
           </button>
 
           {canEdit() && (
-            <button
-              onClick={() => navigate(`/edit/${id}`)}
-              className="edit-btn"
-            >
-              <PencilIcon className="icon" />
-              Edit Place
-            </button>
+            <div className="edit-delete-actions">
+              <button
+                onClick={() => navigate(`/edit/${id}`)}
+                className="edit-btn"
+              >
+                <PencilIcon className="icon" />
+                Edit Place
+              </button>
+
+              <button
+                onClick={handleDelete}
+                className="delete-btn"
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <LoadingSpinner size="small" />
+                ) : (
+                  <>
+                    <TrashIcon className="icon" />
+                    Delete
+                  </>
+                )}
+              </button>
+            </div>
           )}
         </div>
 

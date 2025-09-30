@@ -19,8 +19,15 @@
   margin-bottom: var(--spacing-lg);
 }
 
+.edit-delete-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
 .back-btn,
-.edit-btn {
+.edit-btn,
+.delete-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -54,8 +61,25 @@
   border-color: #2563eb;
 }
 
+.delete-btn {
+  background-color: var(--system-red);
+  color: white;
+  border-color: var(--system-red);
+}
+
+.delete-btn:hover:not(:disabled) {
+  background-color: #c9302c;
+  border-color: #c9302c;
+}
+
+.delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .back-btn .icon,
-.edit-btn .icon {
+.edit-btn .icon,
+.delete-btn .icon {
   width: 18px;
   height: 18px;
 }
