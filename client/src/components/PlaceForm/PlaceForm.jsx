@@ -26,9 +26,9 @@ const PlaceForm = ({
 
   const [imageFiles, setImageFiles] = useState([])
   const [imagePreviews, setImagePreviews] = useState([])
-  const [currentExistingPhotos, setCurrentExistingPhotos] = useState(existingPhotos)
+  const [currentExistingPhotos, setCurrentExistingPhotos] = useState([])
 
-  // Update form data when initialData changes (for edit mode)
+  // Update form data and existing photos when props change (for edit mode)
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -39,12 +39,11 @@ const PlaceForm = ({
         isFeatured: initialData.isFeatured || false
       })
     }
-  }, [initialData])
-
-  // Update existing photos when prop changes
-  useEffect(() => {
-    setCurrentExistingPhotos(existingPhotos)
-  }, [existingPhotos])
+    // Only update existing photos if they're actually provided (not empty array)
+    if (existingPhotos && existingPhotos.length > 0) {
+      setCurrentExistingPhotos(existingPhotos)
+    }
+  }, [initialData, existingPhotos.length])
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
