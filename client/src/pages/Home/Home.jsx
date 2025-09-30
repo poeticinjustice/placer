@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { fetchPlaces } from '../../store/slices/placesSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
-import ResponsiveGrid from '../../components/Gallery/ResponsiveGrid'
-import PlaceCard from '../../components/Gallery/PlaceCard'
+import Gallery from '../../components/Gallery/Gallery'
 import './Home.css'
 
 const Home = () => {
@@ -37,32 +36,12 @@ const Home = () => {
       <section className="featured-places">
         <div className="container">
           <h2>Featured Places</h2>
-          <ResponsiveGrid
-            items={places}
-            renderItem={(place) => (
-              <PlaceCard
-                place={place}
-                variant="default"
-                showAuthor={true}
-                showStats={true}
-                showDescription={false}
-              />
-            )}
-            layout="grid"
-            columns={{ mobile: 2, tablet: 3, desktop: 4 }}
-            gap="lg"
+          <Gallery
+            places={places}
+            isLoading={isLoading}
+            variant="minimal"
             className="featured-places-grid"
-            loading={isLoading}
-            emptyState={
-              <div className="empty-state">
-                <p>No places found. Be the first to share a place!</p>
-                {isAuthenticated && (
-                  <Link to="/create" className="btn btn-primary">
-                    Add Your First Place
-                  </Link>
-                )}
-              </div>
-            }
+            emptyMessage="No places found. Be the first to share a place!"
           />
         </div>
       </section>

@@ -58,7 +58,7 @@ const PlaceCard = ({
         )}
 
         {/* Overlay for additional info */}
-        {place.category && (
+        {place.category && variant !== 'minimal' && (
           <div className="place-card__category">
             {place.category}
           </div>
@@ -67,64 +67,75 @@ const PlaceCard = ({
 
       {/* Content */}
       <div className="place-card__content">
-        <div className="place-card__header">
-          <h3 className="place-card__title">
-            {place.title || place.name}
-          </h3>
+        {variant === 'minimal' ? (
+          /* Minimal variant: only show title */
+          <div className="place-card__header">
+            <h3 className="place-card__title">
+              {place.title || place.name}
+            </h3>
+          </div>
+        ) : (
+          <>
+            <div className="place-card__header">
+              <h3 className="place-card__title">
+                {place.title || place.name}
+              </h3>
 
-          {place.location?.address && (
-            <p className="place-card__location">
-              <MapPinIcon className="location-icon" />
-              {place.location.address}
-            </p>
-          )}
-        </div>
+              {place.location?.address && (
+                <p className="place-card__location">
+                  <MapPinIcon className="location-icon" />
+                  {place.location.address}
+                </p>
+              )}
+            </div>
 
-        {showDescription && place.description && variant !== 'minimal' && (
-          <p className="place-card__description">
-            {place.description}
-          </p>
-        )}
+            {showDescription && place.description && (
+              <p className="place-card__description">
+                {place.description}
+              </p>
+            )}
 
-        {/* Footer */}
-        <div className="place-card__footer">
-          {showAuthor && (
-            <div className="place-card__author">
-              {place.author?.avatar ? (
-                <img
-                  src={place.author.avatar}
-                  alt={getAuthorName()}
-                  className="author-avatar"
-                />
-              ) : (
-                <div className="author-avatar author-avatar--placeholder">
-                  {getAuthorName().charAt(0)}
+            {/* Footer */}
+            <div className="place-card__footer">
+              {showAuthor && (
+                <div className="place-card__author">
+                  {place.author?.avatar ? (
+                    <img
+                      src={place.author.avatar}
+                      alt={getAuthorName()}
+                      className="author-avatar"
+                    />
+                  ) : (
+                    <div className="author-avatar author-avatar--placeholder">
+                      {getAuthorName().charAt(0)}
+                    </div>
+                  )}
+                  <span className="author-name">{getAuthorName()}</span>
                 </div>
               )}
-              <span className="author-name">{getAuthorName()}</span>
-            </div>
-          )}
 
-          {showStats && variant !== 'minimal' && (
-            <div className="place-card__stats">
-              {place.views !== undefined && (
-                <span className="stat">
-                  <EyeIcon className="stat-icon" />
-                  {place.views}
-                </span>
+              {showStats && (
+                <div className="place-card__stats">
+                  {place.views !== undefined && (
+                    <span className="stat">
+                      <EyeIcon className="stat-icon" />
+                      {place.views}
+                    </span>
+                  )}
+                  {place.likesCount !== undefined && (
+                    <span className="stat">
+                      <HeartIcon className="stat-icon" />
+                      {place.likesCount}
+                    </span>
+                  )}
+                  <span className="place-card__date">
+                    {formatDate(place.createdAt)}
+                  </span>
+                </div>
               )}
-              {place.likesCount !== undefined && (
-                <span className="stat">
-                  <HeartIcon className="stat-icon" />
-                  {place.likesCount}
-                </span>
-              )}
-              <span className="place-card__date">
-                {formatDate(place.createdAt)}
-              </span>
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </Link>
   )

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchPlaces, setViewMode, setSearchQuery, setFilters, searchPlaces } from '../../store/slices/placesSlice'
 import Map from '../../components/Map/Map'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import Gallery from '../../components/Gallery/Gallery'
 import ResponsiveGrid from '../../components/Gallery/ResponsiveGrid'
 import PlaceCard from '../../components/Gallery/PlaceCard'
 import {
@@ -85,28 +86,12 @@ const Dashboard = () => {
   )
 
   const renderGalleryView = () => (
-    <ResponsiveGrid
-      items={places}
-      renderItem={(place) => (
-        <PlaceCard
-          place={place}
-          variant="default"
-          showAuthor={false}
-          showStats={true}
-          showDescription={true}
-        />
-      )}
-      layout="grid"
-      columns={{ mobile: 2, tablet: 3, desktop: 4 }}
-      gap="lg"
+    <Gallery
+      places={places}
+      isLoading={isLoading}
+      variant="minimal"
       className="dashboard-places-grid"
-      loading={isLoading}
-      emptyState={
-        <div className="empty-state">
-          <h3>No places yet</h3>
-          <p>Start discovering and sharing amazing places!</p>
-        </div>
-      }
+      emptyMessage="No places yet. Start discovering and sharing amazing places!"
     />
   )
 
