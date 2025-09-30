@@ -1,0 +1,32 @@
+/*
+ * EditPlace.css
+ * Styles specific to the EditPlace page
+ * Extends the base form styles from CreatePlace
+ */
+
+/* Import/extend base form styles */
+@import '../CreatePlace/CreatePlace.css';
+
+/* Override page title for edit context */
+.create-place-header h1 {
+  /* This class is reused but content differs */
+}
+
+/* Additional styles specific to EditPlace */
+.edit-place-notice {
+  background: var(--background-tertiary);
+  border: 1px solid var(--separator);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--label-secondary);
+}
+
+/* Loading state for fetching place data */
+.edit-place-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}

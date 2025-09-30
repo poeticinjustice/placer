@@ -18,6 +18,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard'
 import UserManagement from './pages/Admin/UserManagement'
 import AdminPlaces from './pages/Admin/AdminPlaces'
 import LoadingSpinner from './components/UI/LoadingSpinner'
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
 
 function App() {
   const dispatch = useDispatch()
@@ -36,8 +37,9 @@ function App() {
   const isAdmin = user?.role === 'admin'
 
   return (
-    <div className="App">
-      <Routes>
+    <ErrorBoundary>
+      <div className="App">
+        <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="auth" element={!isAuthenticated ? <Auth /> : <Navigate to="/dashboard" />} />
@@ -86,6 +88,7 @@ function App() {
         </Route>
       </Routes>
     </div>
+    </ErrorBoundary>
   )
 }
 

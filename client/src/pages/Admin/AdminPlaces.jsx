@@ -14,7 +14,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { formatDateShort } from '../../utils/dateFormatter'
 import { API_URL } from '../../config/api'
-import './AdminDashboard.css'
+import './AdminPlaces.css'
 
 const AdminPlaces = () => {
   const { token } = useSelector((state) => state.auth)

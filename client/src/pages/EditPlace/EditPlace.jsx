@@ -6,7 +6,7 @@ import { updatePlace } from '../../store/slices/placesSlice'
 import LocationPicker from '../../components/Map/LocationPicker'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { API_URL } from '../../config/api'
-import '../CreatePlace/CreatePlace.css'
+import './EditPlace.css'
 
 const EditPlace = () => {
   const { id } = useParams()
