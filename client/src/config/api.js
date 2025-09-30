@@ -3,7 +3,11 @@
  * Central configuration for API endpoints
  */
 
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+// In production (Heroku), use relative URLs to the same domain
+// In development, use localhost
+export const API_URL = import.meta.env.PROD
+  ? ''
+  : (import.meta.env.VITE_API_URL || 'http://localhost:8000')
 
 export const API_ENDPOINTS = {
   // Auth endpoints
