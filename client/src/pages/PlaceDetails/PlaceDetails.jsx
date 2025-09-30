@@ -8,7 +8,8 @@ import {
   EyeIcon,
   HeartIcon,
   ArrowLeftIcon,
-  UserCircleIcon
+  UserCircleIcon,
+  PencilIcon
 } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
@@ -89,6 +90,11 @@ const PlaceDetails = () => {
     return `${place.author.firstName} ${place.author.lastName || ''}`.trim()
   }
 
+  const canEdit = () => {
+    if (!isAuthenticated || !place) return false
+    return place.author._id === user._id || user.role === 'admin'
+  }
+
   if (isLoading) {
     return <LoadingSpinner />
   }
@@ -110,11 +116,23 @@ const PlaceDetails = () => {
   return (
     <div className="place-details">
       <div className="container">
-        {/* Back Button */}
-        <button onClick={() => navigate(-1)} className="back-btn">
-          <ArrowLeftIcon className="icon" />
-          Back
-        </button>
+        {/* Action Buttons */}
+        <div className="place-actions-header">
+          <button onClick={() => navigate(-1)} className="back-btn">
+            <ArrowLeftIcon className="icon" />
+            Back
+          </button>
+
+          {canEdit() && (
+            <button
+              onClick={() => navigate(`/edit/${id}`)}
+              className="edit-btn"
+            >
+              <PencilIcon className="icon" />
+              Edit Place
+            </button>
+          )}
+        </div>
 
         {/* Photo Gallery */}
         {place.photos && place.photos.length > 0 && (

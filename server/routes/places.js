@@ -225,9 +225,17 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
       }
     }
 
+    // Prepare update data
+    const updateData = { ...req.body, photos }
+
+    // Only admins can update isFeatured
+    if (req.user.role !== 'admin') {
+      delete updateData.isFeatured
+    }
+
     const updatedPlace = await Place.findByIdAndUpdate(
       req.params.id,
-      { ...req.body, photos },
+      updateData,
       { new: true, runValidators: true }
     ).populate('author', 'firstName lastName avatar isApproved')
 

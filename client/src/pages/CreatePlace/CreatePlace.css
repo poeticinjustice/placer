@@ -231,6 +231,51 @@
   cursor: not-allowed;
 }
 
+/* Checkbox Label */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 12px 16px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--separator);
+  transition: all 0.2s ease;
+}
+
+.checkbox-label:hover {
+  background: var(--background-tertiary);
+  border-color: var(--primary-blue);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-blue);
+}
+
+.checkbox-label span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--label-primary);
+}
+
+/* Existing and New Images Sections */
+.existing-images,
+.new-images {
+  margin-bottom: 20px;
+}
+
+.existing-images h3,
+.new-images h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--label-primary);
+  margin-bottom: 12px;
+}
+
 /* Not approved state */
 .not-approved {
   text-align: center;

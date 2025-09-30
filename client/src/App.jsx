@@ -11,6 +11,7 @@ import Auth from './pages/Auth/Auth'
 import Dashboard from './pages/Dashboard/Dashboard'
 import PlaceDetails from './pages/PlaceDetails/PlaceDetails'
 import CreatePlace from './pages/CreatePlace/CreatePlace'
+import EditPlace from './pages/EditPlace/EditPlace'
 import Profile from './pages/Profile/Profile'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import UserManagement from './pages/Admin/UserManagement'
@@ -47,6 +48,7 @@ function App() {
           <Route path="dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/auth" />} />
           <Route path="place/:id" element={<PlaceDetails />} />
           <Route path="create" element={isAuthenticated ? <CreatePlace /> : <Navigate to="/auth" />} />
+          <Route path="edit/:id" element={isAuthenticated ? <EditPlace /> : <Navigate to="/auth" />} />
           <Route path="profile" element={isAuthenticated ? <Profile /> : <Navigate to="/auth" />} />
           <Route
             path="admin"
