@@ -116,10 +116,14 @@ router.get('/:id', async (req, res) => {
   try {
     const place = await Place.findById(req.params.id)
       .populate('author', 'firstName lastName avatar isApproved')
-      .populate('comments.author', 'firstName lastName avatar')
 
     if (!place) {
       return res.status(404).json({ message: 'Place not found' })
+    }
+
+    // Populate comments if they exist
+    if (place.comments && place.comments.length > 0) {
+      await place.populate('comments.author', 'firstName lastName avatar')
     }
 
     if (!place.isPublic && place.status !== 'published') {
@@ -131,6 +135,8 @@ router.get('/:id', async (req, res) => {
     res.json({ place })
   } catch (error) {
     console.error('Fetch place error:', error)
+    console.error('Error details:', error.message)
+    console.error('Stack:', error.stack)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -296,6 +302,11 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
     } else if (!req.body.location || !req.body.location.coordinates) {
       // Remove location if not provided
       delete processedBody.location
+    }
+
+    // Process tags - split comma-separated string into array
+    if (processedBody.tags && typeof processedBody.tags === 'string') {
+      processedBody.tags = processedBody.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
     }
 
     // Prepare update data

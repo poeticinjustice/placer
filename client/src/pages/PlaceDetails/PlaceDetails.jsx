@@ -16,6 +16,7 @@ import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import CommentSection from '../../components/Comments/CommentSection'
 import Map from '../../components/Map/Map'
+import ImageLightbox from '../../components/UI/ImageLightbox'
 import { formatDate } from '../../utils/dateFormatter'
 import { API_URL } from '../../config/api'
 import './PlaceDetails.css'
@@ -31,6 +32,8 @@ const PlaceDetails = () => {
   const [likesCount, setLikesCount] = useState(0)
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
 
   useEffect(() => {
     fetchPlace()
@@ -173,18 +176,29 @@ const PlaceDetails = () => {
                 src={place.photos[currentPhotoIndex].url}
                 alt={place.name}
                 className="photo"
+                onClick={() => {
+                  setLightboxIndex(currentPhotoIndex)
+                  setLightboxOpen(true)
+                }}
+                style={{ cursor: 'pointer' }}
               />
               {place.photos.length > 1 && (
                 <>
                   <button
                     className="photo-nav prev"
-                    onClick={() => setCurrentPhotoIndex((currentPhotoIndex - 1 + place.photos.length) % place.photos.length)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setCurrentPhotoIndex((currentPhotoIndex - 1 + place.photos.length) % place.photos.length)
+                    }}
                   >
                     ‹
                   </button>
                   <button
                     className="photo-nav next"
-                    onClick={() => setCurrentPhotoIndex((currentPhotoIndex + 1) % place.photos.length)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setCurrentPhotoIndex((currentPhotoIndex + 1) % place.photos.length)
+                    }}
                   >
                     ›
                   </button>
@@ -312,6 +326,16 @@ const PlaceDetails = () => {
           }}
         />
       </div>
+
+      {/* Image Lightbox */}
+      {lightboxOpen && place.photos && place.photos.length > 0 && (
+        <ImageLightbox
+          images={place.photos}
+          currentIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={(index) => setLightboxIndex(index)}
+        />
+      )}
     </div>
   )
 }
