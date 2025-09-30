@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { body, validationResult } from 'express-validator'
 import User from '../models/User.js'
 import { authenticate } from '../middleware/auth.js'
+import { sendSignupNotification } from '../utils/emailNotification.js'
 
 const router = express.Router()
 
@@ -46,6 +47,11 @@ router.post('/signup', [
 
     user.lastLoginAt = new Date()
     await user.save()
+
+    // Send email notification (non-blocking)
+    sendSignupNotification(user).catch(err => {
+      console.error('Failed to send signup notification:', err)
+    })
 
     res.status(201).json({
       message: 'Account created successfully! Your account is pending admin approval.',
