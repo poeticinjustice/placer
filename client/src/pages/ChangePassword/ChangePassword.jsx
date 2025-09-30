@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import axios from 'axios'
 import { LockClosedIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { API_URL } from '../../config/api'
+import { FormInput } from '../../components/Form'
 import './ChangePassword.css'
 
 const ChangePassword = () => {
@@ -93,44 +94,37 @@ const ChangePassword = () => {
           {success && <div className="success-message">{success}</div>}
 
           <form onSubmit={handleSubmit} className="change-password-form">
-            <div className="form-group">
-              <label htmlFor="currentPassword">Current Password</label>
-              <input
-                type="password"
-                id="currentPassword"
-                name="currentPassword"
-                value={formData.currentPassword}
-                onChange={handleChange}
-                required
-                placeholder="Enter your current password"
-              />
-            </div>
+            <FormInput
+              label="Current Password"
+              type="password"
+              name="currentPassword"
+              value={formData.currentPassword}
+              onChange={handleChange}
+              required
+              placeholder="Enter your current password"
+            />
 
-            <div className="form-group">
-              <label htmlFor="newPassword">New Password</label>
-              <input
-                type="password"
-                id="newPassword"
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleChange}
-                required
-                placeholder="Enter your new password (min. 6 characters)"
-              />
-            </div>
+            <FormInput
+              label="New Password"
+              type="password"
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleChange}
+              required
+              minLength={6}
+              placeholder="Enter your new password"
+              helpText="Password must be at least 6 characters"
+            />
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm New Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                placeholder="Confirm your new password"
-              />
-            </div>
+            <FormInput
+              label="Confirm New Password"
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              placeholder="Confirm your new password"
+            />
 
             <button
               type="submit"

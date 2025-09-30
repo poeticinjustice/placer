@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { createPlace } from '../../store/slices/placesSlice'
 import LocationPicker from '../../components/Map/LocationPicker'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import { FormInput, FormTextarea, FormFileInput } from '../../components/Form'
 import './CreatePlace.css'
 
 const CreatePlace = () => {
@@ -139,42 +140,34 @@ const CreatePlace = () => {
           <div className="form-section">
             <h2>Basic Information</h2>
 
-            <div className="form-group">
-              <label htmlFor="title">Title *</label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                placeholder="Enter a descriptive title for this place"
-                required
-              />
-            </div>
+            <FormInput
+              label="Title"
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              placeholder="Enter a descriptive title for this place"
+              required
+            />
 
-            <div className="form-group">
-              <label htmlFor="description">Description</label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Describe what makes this place special..."
-                rows="4"
-              />
-            </div>
+            <FormTextarea
+              label="Description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Describe what makes this place special..."
+              rows={4}
+            />
 
-            <div className="form-group">
-              <label htmlFor="tags">Tags</label>
-              <input
-                type="text"
-                id="tags"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-                placeholder="outdoor, family-friendly, scenic (comma separated)"
-              />
-            </div>
+            <FormInput
+              label="Tags"
+              type="text"
+              name="tags"
+              value={formData.tags}
+              onChange={handleInputChange}
+              placeholder="outdoor, family-friendly, scenic (comma separated)"
+              helpText="Separate tags with commas"
+            />
           </div>
 
           {/* Location */}
@@ -190,18 +183,14 @@ const CreatePlace = () => {
           {/* Images */}
           <div className="form-section">
             <h2>Images</h2>
-            <div className="form-group">
-              <label htmlFor="images">Upload Images</label>
-              <input
-                type="file"
-                id="images"
-                multiple
-                accept="image/*"
-                onChange={handleImageChange}
-                className="file-input"
-              />
-              <p className="help-text">Upload up to 5 images (max 5MB each)</p>
-            </div>
+            <FormFileInput
+              label="Upload Images"
+              name="images"
+              onChange={handleImageChange}
+              accept="image/*"
+              multiple
+              helpText="Upload up to 5 images (max 5MB each)"
+            />
 
             {imagePreviews.length > 0 && (
               <div className="image-previews">

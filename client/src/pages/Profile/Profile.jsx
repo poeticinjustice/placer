@@ -5,6 +5,7 @@ import { updateUserProfile } from '../../store/slices/authSlice'
 import { fetchUserPlaces } from '../../store/slices/userSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { formatDate } from '../../utils/dateFormatter'
+import { FormInput, FormTextarea } from '../../components/Form'
 import {
   UserIcon,
   PencilIcon,
@@ -186,46 +187,38 @@ const Profile = () => {
               </>
             ) : (
               <div className="profile-edit-form">
-                <div className="form-group">
-                  <label>First Name *</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={profileForm.firstName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Last Name</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={profileForm.lastName}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Bio</label>
-                  <textarea
-                    name="bio"
-                    value={profileForm.bio}
-                    onChange={handleInputChange}
-                    placeholder="Tell us about yourself..."
-                    maxLength={500}
-                  />
-                  <small>{profileForm.bio.length}/500 characters</small>
-                </div>
-                <div className="form-group">
-                  <label>Location</label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={profileForm.location}
-                    onChange={handleInputChange}
-                    placeholder="City, Country"
-                  />
-                </div>
+                <FormInput
+                  label="First Name"
+                  type="text"
+                  name="firstName"
+                  value={profileForm.firstName}
+                  onChange={handleInputChange}
+                  required
+                />
+                <FormInput
+                  label="Last Name"
+                  type="text"
+                  name="lastName"
+                  value={profileForm.lastName}
+                  onChange={handleInputChange}
+                />
+                <FormTextarea
+                  label="Bio"
+                  name="bio"
+                  value={profileForm.bio}
+                  onChange={handleInputChange}
+                  placeholder="Tell us about yourself..."
+                  maxLength={500}
+                  showCharCount
+                />
+                <FormInput
+                  label="Location"
+                  type="text"
+                  name="location"
+                  value={profileForm.location}
+                  onChange={handleInputChange}
+                  placeholder="City, Country"
+                />
                 <div className="form-actions">
                   <button
                     onClick={handleSave}

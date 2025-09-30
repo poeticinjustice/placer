@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { signup, login, clearError } from '../../store/slices/authSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import { FormInput } from '../../components/Form'
 import './Auth.css'
 
 const Auth = () => {
@@ -67,62 +68,47 @@ const Auth = () => {
             <form onSubmit={handleSubmit} className="auth-form">
               {!isLogin && (
                 <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="firstName">First Name*</label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      className="input"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      required={!isLogin}
-                      placeholder="Enter your first name"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="lastName">Last Name</label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      className="input"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      placeholder="Enter your last name"
-                    />
-                  </div>
+                  <FormInput
+                    label="First Name"
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your first name"
+                  />
+                  <FormInput
+                    label="Last Name"
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    placeholder="Enter your last name"
+                  />
                 </div>
               )}
 
-              <div className="form-group">
-                <label htmlFor="email">Email*</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="input"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Enter your email"
-                />
-              </div>
+              <FormInput
+                label="Email"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                placeholder="Enter your email"
+              />
 
-              <div className="form-group">
-                <label htmlFor="password">Password*</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  className="input"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Enter your password"
-                  minLength="6"
-                />
-              </div>
+              <FormInput
+                label="Password"
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                placeholder="Enter your password"
+                minLength={6}
+                helpText="Password must be at least 6 characters"
+              />
 
               <button
                 type="submit"
