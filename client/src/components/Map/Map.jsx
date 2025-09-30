@@ -175,7 +175,7 @@ const Map = ({
                   )}
                   <div className="popup-actions">
                     <button
-                      onClick={() => window.open(`/places/${place._id}`, '_blank')}
+                      onClick={() => window.location.href = `/place/${place._id}`}
                       className="view-place-btn"
                     >
                       View Details

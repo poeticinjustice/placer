@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout } from '../../store/slices/authSlice'
 import { Bars3Icon, XMarkIcon, UserCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
@@ -11,6 +11,7 @@ const Header = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
 
   // Debug logging
   console.log('Header.jsx - isAuthenticated:', isAuthenticated)
@@ -33,6 +34,10 @@ const Header = () => {
     setIsAccountMenuOpen(!isAccountMenuOpen)
   }
 
+  const isActive = (path) => {
+    return location.pathname === path
+  }
+
   return (
     <header className="header">
       <div className="header-container">
@@ -42,14 +47,11 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
-          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`}>Home</Link>
           {isAuthenticated ? (
             <>
-              <Link to="/dashboard" className="nav-link">Dashboard</Link>
-              <Link to="/create" className="nav-link">Add Place</Link>
-              {user?.role === 'admin' && (
-                <Link to="/admin" className="nav-link admin-link">Admin</Link>
-              )}
+              <Link to="/dashboard" className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}>Dashboard</Link>
+              <Link to="/create" className={`nav-link ${isActive('/create') ? 'active' : ''}`}>Add Place</Link>
               <div className="user-menu">
                 <button className="user-menu-trigger">
                   {user?.avatar ? (
@@ -87,15 +89,15 @@ const Header = () => {
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <div className="mobile-nav">
-          <Link to="/" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link to="/" className={`mobile-nav-link ${isActive('/') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
             Home
           </Link>
           {isAuthenticated ? (
             <>
-              <Link to="/dashboard" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link to="/dashboard" className={`mobile-nav-link ${isActive('/dashboard') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                 Dashboard
               </Link>
-              <Link to="/create" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link to="/create" className={`mobile-nav-link ${isActive('/create') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                 Add Place
               </Link>
 

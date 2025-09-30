@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import {
   UserIcon,
@@ -18,12 +18,13 @@ import './AdminDashboard.css'
 
 const AdminDashboard = () => {
   const { token } = useSelector((state) => state.auth)
+  const [searchParams, setSearchParams] = useSearchParams()
   const [pendingUsers, setPendingUsers] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [processingUserId, setProcessingUserId] = useState(null)
   const [pagination, setPagination] = useState({
-    page: 1,
+    page: parseInt(searchParams.get('page')) || 1,
     limit: 20,
     total: 0,
     pages: 0
@@ -234,7 +235,11 @@ const AdminDashboard = () => {
             {pagination.pages > 1 && (
               <div className="pagination">
                 <button
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                  onClick={() => {
+                    const newPage = pagination.page - 1
+                    setPagination(prev => ({ ...prev, page: newPage }))
+                    setSearchParams({ page: newPage.toString() })
+                  }}
                   disabled={pagination.page === 1}
                   className="btn btn-secondary"
                 >
@@ -246,7 +251,11 @@ const AdminDashboard = () => {
                 </span>
 
                 <button
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                  onClick={() => {
+                    const newPage = pagination.page + 1
+                    setPagination(prev => ({ ...prev, page: newPage }))
+                    setSearchParams({ page: newPage.toString() })
+                  }}
                   disabled={pagination.page === pagination.pages}
                   className="btn btn-secondary"
                 >

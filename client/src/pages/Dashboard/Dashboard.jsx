@@ -20,7 +20,7 @@ import {
   FunnelIcon,
   ViewColumnsIcon,
 } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import SearchBar from '../../components/Search/SearchBar';
 import FilterPanel from '../../components/Search/FilterPanel';
 import './Dashboard.css';
@@ -31,19 +31,44 @@ const Dashboard = () => {
   const { places, isLoading, viewMode, searchQuery, filters } = useSelector(
     (state) => state.places
   );
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
 
+  // Initialize from URL params
   useEffect(() => {
+    const urlViewMode = searchParams.get('view');
+    const urlSearch = searchParams.get('search');
+
+    if (urlViewMode && ['gallery', 'masonry', 'list', 'map'].includes(urlViewMode)) {
+      dispatch(setViewMode(urlViewMode));
+    }
+
+    if (urlSearch) {
+      dispatch(setSearchQuery(urlSearch));
+    }
+
     dispatch(fetchPlaces());
   }, [dispatch]);
 
   const handleViewModeChange = (mode) => {
     dispatch(setViewMode(mode));
+    // Update URL parameter
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('view', mode);
+    setSearchParams(newParams);
   };
 
   const handleSearch = (query) => {
     dispatch(setSearchQuery(query));
     dispatch(searchPlaces());
+    // Update URL parameter
+    const newParams = new URLSearchParams(searchParams);
+    if (query) {
+      newParams.set('search', query);
+    } else {
+      newParams.delete('search');
+    }
+    setSearchParams(newParams);
   };
 
   const handleFiltersChange = (newFilters) => {
