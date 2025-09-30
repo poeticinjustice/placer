@@ -364,6 +364,16 @@
   overflow: hidden;
 }
 
+.map-limit-notice {
+  text-align: center;
+  padding: 12px;
+  background: #eff6ff;
+  border-top: 1px solid #dbeafe;
+  color: #1e40af;
+  font-size: 14px;
+  margin: 0;
+}
+
 /* Responsive design */
 @media (min-width: 768px) {
   .view-mode-label {

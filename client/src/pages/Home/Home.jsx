@@ -1,19 +1,24 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { fetchPlaces } from '../../store/slices/placesSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import Gallery from '../../components/Gallery/Gallery'
+import Pagination from '../../components/UI/Pagination'
 import './Home.css'
 
 const Home = () => {
   const dispatch = useDispatch()
-  const { places, isLoading } = useSelector((state) => state.places)
+  const { places, isLoading, totalPages } = useSelector((state) => state.places)
   const { isAuthenticated } = useSelector((state) => state.auth)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1)
 
   useEffect(() => {
-    dispatch(fetchPlaces({ limit: 12, featured: 'true' }))
-  }, [dispatch])
+    const page = parseInt(searchParams.get('page')) || 1
+    setCurrentPage(page)
+    dispatch(fetchPlaces({ limit: 12, featured: 'true', page }))
+  }, [dispatch, searchParams])
 
   if (isLoading) {
     return <LoadingSpinner />
@@ -42,6 +47,11 @@ const Home = () => {
             variant="minimal"
             className="featured-places-grid"
             emptyMessage="No featured places yet. Check back soon!"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setSearchParams({ page })}
           />
         </div>
       </section>

@@ -9,6 +9,8 @@ const initialState = {
   error: null,
   searchQuery: '',
   viewMode: 'gallery', // gallery, list, map
+  totalPages: 1,
+  currentPage: 1,
   filters: {
     location: '',
     author: '',
@@ -153,6 +155,8 @@ const placesSlice = createSlice({
       .addCase(fetchPlaces.fulfilled, (state, action) => {
         state.isLoading = false
         state.places = action.payload.places
+        state.totalPages = action.payload.totalPages || 1
+        state.currentPage = action.payload.currentPage || 1
       })
       .addCase(fetchPlaces.rejected, (state, action) => {
         state.isLoading = false

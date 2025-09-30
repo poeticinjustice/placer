@@ -12,6 +12,7 @@ import LoadingSpinner from '../../components/UI/LoadingSpinner';
 import Gallery from '../../components/Gallery/Gallery';
 import ResponsiveGrid from '../../components/Gallery/ResponsiveGrid';
 import PlaceCard from '../../components/Gallery/PlaceCard';
+import Pagination from '../../components/UI/Pagination';
 import {
   MapIcon,
   Squares2X2Icon,
@@ -28,16 +29,18 @@ import './Dashboard.css';
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { places, isLoading, viewMode, searchQuery, filters } = useSelector(
+  const { places, isLoading, viewMode, searchQuery, filters, totalPages } = useSelector(
     (state) => state.places
   );
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1);
 
   // Initialize from URL params
   useEffect(() => {
     const urlViewMode = searchParams.get('view');
     const urlSearch = searchParams.get('search');
+    const urlPage = parseInt(searchParams.get('page')) || 1;
 
     if (urlViewMode && ['gallery', 'masonry', 'list', 'map'].includes(urlViewMode)) {
       dispatch(setViewMode(urlViewMode));
@@ -47,14 +50,29 @@ const Dashboard = () => {
       dispatch(setSearchQuery(urlSearch));
     }
 
-    dispatch(fetchPlaces());
-  }, [dispatch]);
+    setCurrentPage(urlPage);
+
+    // For map view, fetch all places (no pagination)
+    if (urlViewMode === 'map') {
+      dispatch(fetchPlaces({ limit: 1000 })); // Get all places
+    } else {
+      dispatch(fetchPlaces({ page: urlPage }));
+    }
+  }, [dispatch, searchParams]);
 
   const handleViewModeChange = (mode) => {
     dispatch(setViewMode(mode));
     // Update URL parameter
     const newParams = new URLSearchParams(searchParams);
     newParams.set('view', mode);
+
+    // Map view doesn't use pagination
+    if (mode === 'map') {
+      newParams.delete('page');
+    } else {
+      newParams.set('page', '1'); // Reset to page 1 on view change
+    }
+
     setSearchParams(newParams);
   };
 
@@ -68,12 +86,23 @@ const Dashboard = () => {
     } else {
       newParams.delete('search');
     }
+    newParams.set('page', '1'); // Reset to page 1 on search
     setSearchParams(newParams);
   };
 
   const handleFiltersChange = (newFilters) => {
     dispatch(setFilters(newFilters));
     dispatch(searchPlaces());
+    // Reset to page 1 on filter change
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', '1');
+    setSearchParams(newParams);
+  };
+
+  const handlePageChange = (page) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', page.toString());
+    setSearchParams(newParams);
   };
 
   const handleCloseFilters = () => {
@@ -88,69 +117,90 @@ const Dashboard = () => {
   ];
 
   const renderGalleryView = () => (
-    <Gallery
-      places={places}
-      isLoading={isLoading}
-      variant='minimal'
-      className='dashboard-places-grid'
-      emptyMessage='No places yet. Start discovering and sharing amazing places!'
-    />
+    <>
+      <Gallery
+        places={places}
+        isLoading={isLoading}
+        variant='minimal'
+        className='dashboard-places-grid'
+        emptyMessage='No places yet. Start discovering and sharing amazing places!'
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+    </>
   );
 
   const renderMasonryView = () => (
-    <ResponsiveGrid
-      items={places}
-      renderItem={(place) => (
-        <PlaceCard
-          place={place}
-          variant='compact'
-          showAuthor={false}
-          showStats={true}
-          showDescription={true}
-        />
-      )}
-      layout='masonry'
-      columns={{ mobile: 2, tablet: 3, desktop: 4 }}
-      gap='md'
-      className='dashboard-places-masonry'
-      loading={isLoading}
-      emptyState={
-        <div className='empty-state'>
-          <h3>No places yet</h3>
-          <p>Start discovering and sharing amazing places!</p>
-        </div>
-      }
-    />
+    <>
+      <ResponsiveGrid
+        items={places}
+        renderItem={(place) => (
+          <PlaceCard
+            place={place}
+            variant='compact'
+            showAuthor={false}
+            showStats={true}
+            showDescription={true}
+          />
+        )}
+        layout='masonry'
+        columns={{ mobile: 2, tablet: 3, desktop: 4 }}
+        gap='md'
+        className='dashboard-places-masonry'
+        loading={isLoading}
+        emptyState={
+          <div className='empty-state'>
+            <h3>No places yet</h3>
+            <p>Start discovering and sharing amazing places!</p>
+          </div>
+        }
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+    </>
   );
 
   const renderListView = () => (
-    <div className='places-list'>
-      {places.map((place) => (
-        <div key={place._id} className='place-list-item'>
-          {place.photos && place.photos.length > 0 && (
-            <div className='list-item-image'>
-              <img src={place.photos[0].url} alt={place.title} />
-            </div>
-          )}
-          <div className='list-item-content'>
-            <h3>{place.title}</h3>
-            {place.description && (
-              <p>{place.description.substring(0, 200)}...</p>
+    <>
+      <div className='places-list'>
+        {places.map((place) => (
+          <div key={place._id} className='place-list-item'>
+            {place.photos && place.photos.length > 0 && (
+              <div className='list-item-image'>
+                <img src={place.photos[0].url} alt={place.title} />
+              </div>
             )}
-            <div className='list-item-meta'>
-              {place.location?.address && (
-                <span className='place-location'>{place.location.address}</span>
+            <div className='list-item-content'>
+              <h3>{place.name || place.title}</h3>
+              {place.description && (
+                <p>{place.description.substring(0, 200)}...</p>
               )}
+              <div className='list-item-meta'>
+                {place.location?.address && (
+                  <span className='place-location'>{place.location.address}</span>
+                )}
+              </div>
+            </div>
+            <div className='list-item-actions'>
+              <Link to={`/place/${place._id}`} className='view-place-btn'>
+                View Details
+              </Link>
             </div>
           </div>
-          <div className='list-item-actions'>
-            <Link to={`/place/${place._id}`} className='view-place-btn'>
-              View Details
-            </Link>
-          </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+    </>
   );
 
   const renderMapView = () => (

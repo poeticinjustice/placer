@@ -68,6 +68,8 @@ router.get('/', async (req, res) => {
 
       return res.json({
         places: paginatedPlaces,
+        totalPages: Math.ceil(filteredPlaces.length / limit),
+        currentPage: parseInt(page),
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -95,6 +97,8 @@ router.get('/', async (req, res) => {
 
     res.json({
       places,
+      totalPages: Math.ceil(total / limit),
+      currentPage: parseInt(page),
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
