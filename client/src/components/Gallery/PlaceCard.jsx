@@ -56,13 +56,6 @@ const PlaceCard = ({
             <MapPinIcon className="placeholder-icon" />
           </div>
         )}
-
-        {/* Overlay for additional info */}
-        {place.category && variant !== 'minimal' && (
-          <div className="place-card__category">
-            {place.category}
-          </div>
-        )}
       </div>
 
       {/* Content */}

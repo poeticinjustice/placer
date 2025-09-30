@@ -13,24 +13,24 @@ router.get('/', async (req, res) => {
       page = 1,
       limit = 20,
       search = '',
-      category = '',
       author = '',
       sortBy = 'createdAt',
       sortOrder = 'desc',
       lat,
       lng,
-      radius = 10
+      radius = 10,
+      featured = ''
     } = req.query
 
     const skip = (page - 1) * limit
     let query = { isPublic: true, status: 'published' }
 
-    if (search) {
-      query.$text = { $search: search }
+    if (featured === 'true') {
+      query.isFeatured = true
     }
 
-    if (category && category !== 'all') {
-      query.category = category
+    if (search) {
+      query.$text = { $search: search }
     }
 
     if (author) {
@@ -366,6 +366,31 @@ router.delete('/:id/comments/:commentId', authenticate, async (req, res) => {
     res.json({ message: 'Comment deleted successfully' })
   } catch (error) {
     console.error('Delete comment error:', error)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+router.patch('/:id/featured', authenticate, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Only admins can feature places' })
+    }
+
+    const place = await Place.findById(req.params.id)
+
+    if (!place) {
+      return res.status(404).json({ message: 'Place not found' })
+    }
+
+    place.isFeatured = !place.isFeatured
+    await place.save()
+
+    res.json({
+      message: place.isFeatured ? 'Place featured successfully' : 'Place unfeatured successfully',
+      isFeatured: place.isFeatured
+    })
+  } catch (error) {
+    console.error('Toggle featured error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })

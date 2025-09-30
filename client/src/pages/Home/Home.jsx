@@ -12,7 +12,7 @@ const Home = () => {
   const { isAuthenticated } = useSelector((state) => state.auth)
 
   useEffect(() => {
-    dispatch(fetchPlaces({ limit: 6 }))
+    dispatch(fetchPlaces({ limit: 12, featured: 'true' }))
   }, [dispatch])
 
   if (isLoading) {
@@ -41,7 +41,7 @@ const Home = () => {
             isLoading={isLoading}
             variant="minimal"
             className="featured-places-grid"
-            emptyMessage="No places found. Be the first to share a place!"
+            emptyMessage="No featured places yet. Check back soon!"
           />
         </div>
       </section>

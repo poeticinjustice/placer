@@ -142,6 +142,12 @@ const AdminDashboard = () => {
             <h3>User Management</h3>
             <p>View, approve, and manage all users</p>
           </Link>
+
+          <Link to="/admin/places" className="action-card">
+            <MapPinIcon className="icon" />
+            <h3>Featured Places</h3>
+            <p>Manage which places appear on the home page</p>
+          </Link>
         </div>
 
         {pendingUsers.length === 0 ? (

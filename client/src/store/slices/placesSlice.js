@@ -106,10 +106,6 @@ export const searchPlaces = createAsyncThunk(
       searchParams.search = searchQuery.trim()
     }
 
-    if (filters.category && filters.category !== 'all') {
-      searchParams.category = filters.category
-    }
-
     if (filters.location && filters.location.trim()) {
       // This could be enhanced to get coordinates from the location string
       searchParams.location = filters.location.trim()

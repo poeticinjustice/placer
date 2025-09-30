@@ -16,25 +16,12 @@ const CreatePlace = () => {
     title: '',
     description: '',
     location: null,
-    category: '',
     tags: '',
     images: []
   })
 
   const [imageFiles, setImageFiles] = useState([])
   const [imagePreviews, setImagePreviews] = useState([])
-
-  const categories = [
-    { value: 'restaurant', label: 'Restaurant' },
-    { value: 'attraction', label: 'Attraction' },
-    { value: 'outdoor', label: 'Outdoor' },
-    { value: 'shopping', label: 'Shopping' },
-    { value: 'entertainment', label: 'Entertainment' },
-    { value: 'accommodation', label: 'Accommodation' },
-    { value: 'transport', label: 'Transport' },
-    { value: 'services', label: 'Services' },
-    { value: 'other', label: 'Other' }
-  ]
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -96,11 +83,6 @@ const CreatePlace = () => {
     const submitData = new FormData()
     submitData.append('name', formData.title) // Server expects 'name'
     submitData.append('description', formData.description)
-
-    // Only append category if it's not empty (let server use default 'other' if empty)
-    if (formData.category && formData.category.trim()) {
-      submitData.append('category', formData.category)
-    }
 
     // Only append tags if not empty
     if (formData.tags && formData.tags.trim()) {
@@ -182,35 +164,16 @@ const CreatePlace = () => {
               />
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="category">Category</label>
-                <select
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select a category</option>
-                  {categories.map(category => (
-                    <option key={category.value} value={category.value}>
-                      {category.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="tags">Tags</label>
-                <input
-                  type="text"
-                  id="tags"
-                  name="tags"
-                  value={formData.tags}
-                  onChange={handleInputChange}
-                  placeholder="outdoor, family-friendly, scenic (comma separated)"
-                />
-              </div>
+            <div className="form-group">
+              <label htmlFor="tags">Tags</label>
+              <input
+                type="text"
+                id="tags"
+                name="tags"
+                value={formData.tags}
+                onChange={handleInputChange}
+                placeholder="outdoor, family-friendly, scenic (comma separated)"
+              />
             </div>
           </div>
 

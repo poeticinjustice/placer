@@ -167,9 +167,6 @@ const PlaceDetails = () => {
             <div className="place-header">
               <div>
                 <h1 className="place-title">{place.name}</h1>
-                {place.category && (
-                  <span className="place-category">{place.category}</span>
-                )}
               </div>
 
               <button

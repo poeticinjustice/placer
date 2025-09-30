@@ -5,19 +5,6 @@ import './FilterPanel.css'
 const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
   const [localFilters, setLocalFilters] = useState(filters)
 
-  const categories = [
-    { value: '', label: 'All Categories' },
-    { value: 'restaurant', label: 'Restaurant' },
-    { value: 'attraction', label: 'Attraction' },
-    { value: 'outdoor', label: 'Outdoor' },
-    { value: 'shopping', label: 'Shopping' },
-    { value: 'entertainment', label: 'Entertainment' },
-    { value: 'accommodation', label: 'Accommodation' },
-    { value: 'transport', label: 'Transport' },
-    { value: 'services', label: 'Services' },
-    { value: 'other', label: 'Other' }
-  ]
-
   const sortOptions = [
     { value: 'createdAt-desc', label: 'Newest First' },
     { value: 'createdAt-asc', label: 'Oldest First' },
@@ -33,7 +20,6 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
 
   const handleReset = () => {
     const resetFilters = {
-      category: '',
       sortBy: 'createdAt',
       sortOrder: 'desc',
       radius: 10,
@@ -64,22 +50,6 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
         </div>
 
         <div className="filter-panel-content">
-          {/* Category Filter */}
-          <div className="filter-group">
-            <label className="filter-label">Category</label>
-            <select
-              value={localFilters.category || ''}
-              onChange={(e) => handleFilterChange('category', e.target.value)}
-              className="filter-select"
-            >
-              {categories.map(category => (
-                <option key={category.value} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* Sort Filter */}
           <div className="filter-group">
             <label className="filter-label">Sort By</label>

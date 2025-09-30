@@ -14,6 +14,7 @@ import CreatePlace from './pages/CreatePlace/CreatePlace'
 import Profile from './pages/Profile/Profile'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import UserManagement from './pages/Admin/UserManagement'
+import AdminPlaces from './pages/Admin/AdminPlaces'
 import LoadingSpinner from './components/UI/LoadingSpinner'
 
 function App() {
@@ -68,6 +69,18 @@ function App() {
                 <Navigate to="/dashboard" />
               ) : (
                 <UserManagement />
+              )
+            }
+          />
+          <Route
+            path="admin/places"
+            element={
+              !isAuthenticated ? (
+                <Navigate to="/auth" />
+              ) : !isAdmin ? (
+                <Navigate to="/dashboard" />
+              ) : (
+                <AdminPlaces />
               )
             }
           />

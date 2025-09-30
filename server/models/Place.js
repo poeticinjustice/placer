@@ -80,21 +80,6 @@ const placeSchema = new mongoose.Schema({
       maxlength: [200, 'Caption cannot be more than 200 characters']
     }
   }],
-  category: {
-    type: String,
-    enum: [
-      'restaurant',
-      'attraction',
-      'outdoor',
-      'shopping',
-      'entertainment',
-      'accommodation',
-      'transport',
-      'services',
-      'other'
-    ],
-    default: 'other'
-  },
   tags: [{
     type: String,
     trim: true,
@@ -129,6 +114,10 @@ const placeSchema = new mongoose.Schema({
     type: String,
     enum: ['draft', 'published', 'archived'],
     default: 'published'
+  },
+  isFeatured: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true
@@ -137,9 +126,9 @@ const placeSchema = new mongoose.Schema({
 placeSchema.index({ location: '2dsphere' })
 placeSchema.index({ name: 'text', description: 'text', 'location.address': 'text' })
 placeSchema.index({ author: 1, createdAt: -1 })
-placeSchema.index({ category: 1 })
 placeSchema.index({ tags: 1 })
 placeSchema.index({ isPublic: 1, status: 1 })
+placeSchema.index({ isFeatured: 1 })
 
 placeSchema.virtual('likesCount').get(function() {
   return this.likes.length

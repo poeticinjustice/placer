@@ -69,9 +69,6 @@ const Dashboard = () => {
           </p>
         )}
         <div className="place-meta">
-          {place.category && (
-            <span className="place-category">{place.category}</span>
-          )}
           {place.location?.address && (
             <span className="place-location">{place.location.address}</span>
           )}
@@ -136,9 +133,6 @@ const Dashboard = () => {
               <p>{place.description.substring(0, 200)}...</p>
             )}
             <div className="list-item-meta">
-              {place.category && (
-                <span className="place-category">{place.category}</span>
-              )}
               {place.location?.address && (
                 <span className="place-location">{place.location.address}</span>
               )}
