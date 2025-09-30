@@ -12,9 +12,9 @@ import {
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import { formatDateShort } from '../../utils/dateFormatter'
+import { API_URL } from '../../config/api'
 import './AdminDashboard.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const AdminPlaces = () => {
   const { token } = useSelector((state) => state.auth)
@@ -75,14 +75,6 @@ const AdminPlaces = () => {
     } finally {
       setProcessingPlaceId(null)
     }
-  }
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
   }
 
   if (isLoading && places.length === 0) {
@@ -180,7 +172,7 @@ const AdminPlaces = () => {
                         {place.likes?.length || 0}
                       </span>
                       <span className="meta-date">
-                        {formatDate(place.createdAt)}
+                        {formatDateShort(place.createdAt)}
                       </span>
                     </div>
 

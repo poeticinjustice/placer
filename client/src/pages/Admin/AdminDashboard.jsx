@@ -12,9 +12,9 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import { formatDateTime } from '../../utils/dateFormatter'
+import { API_URL } from '../../config/api'
 import './AdminDashboard.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const AdminDashboard = () => {
   const { token } = useSelector((state) => state.auth)
@@ -100,16 +100,6 @@ const AdminDashboard = () => {
     }
   }
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
   if (isLoading && pendingUsers.length === 0) {
     return <LoadingSpinner />
   }
@@ -191,7 +181,7 @@ const AdminDashboard = () => {
 
                       <div className="detail-item">
                         <CalendarDaysIcon className="icon" />
-                        <span>Joined {formatDate(user.createdAt)}</span>
+                        <span>Joined {formatDateTime(user.createdAt)}</span>
                       </div>
                     </div>
 

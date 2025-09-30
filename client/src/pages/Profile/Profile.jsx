@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUserProfile } from '../../store/slices/authSlice'
 import { fetchUserPlaces } from '../../store/slices/userSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import { formatDate } from '../../utils/dateFormatter'
 import {
   UserIcon,
   PencilIcon,
@@ -102,14 +103,6 @@ const Profile = () => {
     } else {
       return <span className="status-badge pending">Pending Approval</span>
     }
-  }
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
   }
 
   if (!user) {
@@ -323,9 +316,9 @@ const Profile = () => {
               <MapPinIcon className="empty-icon" />
               <h3>No places yet</h3>
               <p>Start sharing amazing places with the community!</p>
-              <a href="/create" className="btn btn-primary">
+              <Link to="/create" className="btn btn-primary">
                 Create Your First Place
-              </a>
+              </Link>
             </div>
           )}
         </div>

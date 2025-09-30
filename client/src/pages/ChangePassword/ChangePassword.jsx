@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
 import { LockClosedIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { API_URL } from '../../config/api'
 import './ChangePassword.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const ChangePassword = () => {
   const navigate = useNavigate()

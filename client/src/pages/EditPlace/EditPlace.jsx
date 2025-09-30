@@ -5,9 +5,8 @@ import axios from 'axios'
 import { updatePlace } from '../../store/slices/placesSlice'
 import LocationPicker from '../../components/Map/LocationPicker'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import { API_URL } from '../../config/api'
 import '../CreatePlace/CreatePlace.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const EditPlace = () => {
   const { id } = useParams()

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { MapPinIcon, EyeIcon, HeartIcon } from '@heroicons/react/24/outline'
+import { formatDateShort } from '../../utils/dateFormatter'
 import './PlaceCard.css'
 
 const PlaceCard = ({
@@ -10,14 +11,6 @@ const PlaceCard = ({
   showDescription = true,
   className = ''
 }) => {
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
-  }
-
   const getAuthorName = () => {
     if (place.isAnonymous || !place.author) return 'Anonymous'
     return `${place.author.firstName} ${place.author.lastName || ''}`.trim()
@@ -122,7 +115,7 @@ const PlaceCard = ({
                     </span>
                   )}
                   <span className="place-card__date">
-                    {formatDate(place.createdAt)}
+                    {formatDateShort(place.createdAt)}
                   </span>
                 </div>
               )}

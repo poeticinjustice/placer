@@ -16,9 +16,9 @@ import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import CommentSection from '../../components/Comments/CommentSection'
 import Map from '../../components/Map/Map'
+import { formatDate } from '../../utils/dateFormatter'
+import { API_URL } from '../../config/api'
 import './PlaceDetails.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const PlaceDetails = () => {
   const { id } = useParams()
@@ -76,14 +76,6 @@ const PlaceDetails = () => {
     } catch (err) {
       console.error('Error liking place:', err)
     }
-  }
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
   }
 
   const getAuthorName = () => {

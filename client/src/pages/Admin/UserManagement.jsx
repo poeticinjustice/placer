@@ -14,9 +14,9 @@ import {
   ShieldCheckIcon
 } from '@heroicons/react/24/outline'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
+import { formatDateTime } from '../../utils/dateFormatter'
+import { API_URL } from '../../config/api'
 import './UserManagement.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const UserManagement = () => {
   const { token } = useSelector((state) => state.auth)
@@ -132,16 +132,6 @@ const UserManagement = () => {
     } finally {
       setProcessingUserId(null)
     }
-  }
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
   }
 
   if (isLoading) {
@@ -296,7 +286,7 @@ const UserManagement = () => {
 
                   <div className="td-joined">
                     <CalendarDaysIcon className="icon" />
-                    {formatDate(user.createdAt)}
+                    {formatDateTime(user.createdAt)}
                   </div>
 
                   <div className="td-actions">

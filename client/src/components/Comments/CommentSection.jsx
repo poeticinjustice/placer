@@ -7,9 +7,9 @@ import {
   UserCircleIcon
 } from '@heroicons/react/24/outline'
 import LoadingSpinner from '../UI/LoadingSpinner'
+import { formatRelativeTime } from '../../utils/dateFormatter'
+import { API_URL } from '../../config/api'
 import './CommentSection.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onCommentDeleted }) => {
   const { user, token, isAuthenticated } = useSelector((state) => state.auth)
@@ -78,23 +78,6 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
     } finally {
       setDeletingId(null)
     }
-  }
-
-  const formatDate = (date) => {
-    const now = new Date()
-    const commentDate = new Date(date)
-    const diffInSeconds = Math.floor((now - commentDate) / 1000)
-
-    if (diffInSeconds < 60) return 'Just now'
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`
-
-    return commentDate.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: commentDate.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-    })
   }
 
   const canDeleteComment = (comment) => {
@@ -182,7 +165,7 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
                     <span className="author-name">
                       {comment.isAnonymous ? 'Anonymous' : `${comment.author.firstName} ${comment.author.lastName || ''}`}
                     </span>
-                    <span className="comment-date">{formatDate(comment.createdAt)}</span>
+                    <span className="comment-date">{formatRelativeTime(comment.createdAt)}</span>
                   </div>
 
                   {canDeleteComment(comment) && (

@@ -35,11 +35,6 @@ function App() {
 
   const isAdmin = user?.role === 'admin'
 
-  // Debug logging
-  console.log('App.jsx - User data:', user)
-  console.log('App.jsx - isAdmin:', isAdmin)
-  console.log('App.jsx - user.role:', user?.role)
-
   return (
     <div className="App">
       <Routes>
