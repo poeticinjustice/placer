@@ -54,34 +54,6 @@ const Dashboard = () => {
     { key: 'map', icon: MapIcon, label: 'Map' }
   ]
 
-  const renderPlaceCard = (place) => (
-    <div key={place._id} className="place-card">
-      {place.photos && place.photos.length > 0 && (
-        <div className="place-image">
-          <img src={place.photos[0].url} alt={place.title} />
-        </div>
-      )}
-      <div className="place-content">
-        <h3>{place.title}</h3>
-        {place.description && (
-          <p className="place-description">
-            {place.description.substring(0, 120)}...
-          </p>
-        )}
-        <div className="place-meta">
-          {place.location?.address && (
-            <span className="place-location">{place.location.address}</span>
-          )}
-        </div>
-        <div className="place-actions">
-          <Link to={`/places/${place._id}`} className="view-place-btn">
-            View Details
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-
   const renderGalleryView = () => (
     <Gallery
       places={places}
@@ -139,7 +111,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="list-item-actions">
-            <Link to={`/places/${place._id}`} className="view-place-btn">
+            <Link to={`/place/${place._id}`} className="view-place-btn">
               View Details
             </Link>
           </div>

@@ -214,7 +214,18 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this place' })
     }
 
-    const photos = [...place.photos]
+    // Handle photos - start with existing photos from request or empty array
+    let photos = []
+    if (req.body.existingPhotos) {
+      try {
+        photos = JSON.parse(req.body.existingPhotos)
+      } catch (e) {
+        console.error('Error parsing existing photos:', e)
+        photos = []
+      }
+    }
+
+    // Add new photos from file upload
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const result = await uploadToCloudinary(file)
@@ -225,8 +236,30 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
       }
     }
 
+    // Process location coordinates - same as create route
+    let processedBody = { ...req.body }
+    if (req.body.location?.coordinates?.coordinates) {
+      let coordinates
+      if (typeof req.body.location.coordinates.coordinates === 'string') {
+        coordinates = JSON.parse(req.body.location.coordinates.coordinates)
+      } else if (Array.isArray(req.body.location.coordinates.coordinates)) {
+        coordinates = req.body.location.coordinates.coordinates
+      }
+
+      if (coordinates) {
+        processedBody.location = {
+          address: req.body.location.address,
+          type: 'Point',
+          coordinates: coordinates
+        }
+      }
+    }
+
     // Prepare update data
-    const updateData = { ...req.body, photos }
+    const updateData = { ...processedBody, photos }
+
+    // Remove existingPhotos from update data as it's not a schema field
+    delete updateData.existingPhotos
 
     // Only admins can update isFeatured
     if (req.user.role !== 'admin') {
