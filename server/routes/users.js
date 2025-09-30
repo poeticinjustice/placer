@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator'
 import User from '../models/User.js'
 import Place from '../models/Place.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
-import { uploadMiddleware, uploadToCloudinary } from '../middleware/upload.js'
+import { uploadSingleMiddleware, uploadToCloudinary } from '../middleware/upload.js'
 
 const router = express.Router()
 
@@ -17,7 +17,7 @@ router.get('/profile', authenticate, async (req, res) => {
   }
 })
 
-router.put('/profile', authenticate, uploadMiddleware, [
+router.put('/profile', authenticate, uploadSingleMiddleware, [
   body('firstName').optional().trim().notEmpty().withMessage('First name cannot be empty'),
   body('lastName').optional().trim(),
   body('bio').optional().isLength({ max: 500 }).withMessage('Bio cannot be more than 500 characters'),

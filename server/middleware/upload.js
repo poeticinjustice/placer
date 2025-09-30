@@ -22,6 +22,7 @@ const upload = multer({
 })
 
 export const uploadMiddleware = upload.array('photos', 10)
+export const uploadSingleMiddleware = upload.single('avatar')
 
 export const uploadToCloudinary = async (file) => {
   // Configure Cloudinary at runtime with environment variables
