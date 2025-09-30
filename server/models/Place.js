@@ -28,7 +28,7 @@ const placeSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: [true, 'Description is required'],
+    required: false,
     maxlength: [2000, 'Description cannot be more than 2000 characters']
   },
   author: {
@@ -43,18 +43,19 @@ const placeSchema = new mongoose.Schema({
   location: {
     address: {
       type: String,
-      required: [true, 'Address is required']
+      required: false
     },
     type: {
       type: String,
       enum: ['Point'],
-      required: true
+      required: false
     },
     coordinates: {
       type: [Number],
-      required: true,
+      required: false,
       validate: {
         validator: function(coords) {
+          if (!coords || coords.length === 0) return true; // Allow empty
           return coords.length === 2 &&
                  coords[0] >= -180 && coords[0] <= 180 && // longitude
                  coords[1] >= -90 && coords[1] <= 90      // latitude

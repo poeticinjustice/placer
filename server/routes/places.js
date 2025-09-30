@@ -133,9 +133,9 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', authenticate, requireApproval, uploadMiddleware, [
   body('name').trim().notEmpty().withMessage('Place name is required'),
-  body('description').trim().notEmpty().withMessage('Description is required'),
-  body('location.address').notEmpty().withMessage('Address is required'),
-  body('location.coordinates.coordinates').custom((value) => {
+  // Description, location, and photos are now optional
+  body('location.coordinates.coordinates').optional().custom((value) => {
+    if (!value) return true; // Allow missing coordinates
     if (typeof value === 'string') {
       try {
         const coords = JSON.parse(value);
@@ -150,7 +150,7 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
                value.every(coord => typeof coord === 'number')) {
       return true;
     }
-    throw new Error('Valid coordinates required');
+    throw new Error('Valid coordinates must be an array of 2 numbers');
   })
 ], async (req, res) => {
   try {
@@ -198,7 +198,7 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
         coordinates = req.body.location.coordinates.coordinates
       }
 
-      if (coordinates) {
+      if (coordinates && coordinates.length === 2) {
         processedBody.location = {
           address: req.body.location.address,
           type: 'Point',
@@ -206,6 +206,9 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
         }
         console.log('Processed location structure:', processedBody.location)
       }
+    } else if (!req.body.location || !req.body.location.coordinates) {
+      // Remove location if not provided
+      delete processedBody.location
     }
 
     const placeData = {
@@ -279,13 +282,16 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
         coordinates = req.body.location.coordinates.coordinates
       }
 
-      if (coordinates) {
+      if (coordinates && coordinates.length === 2) {
         processedBody.location = {
           address: req.body.location.address,
           type: 'Point',
           coordinates: coordinates
         }
       }
+    } else if (!req.body.location || !req.body.location.coordinates) {
+      // Remove location if not provided
+      delete processedBody.location
     }
 
     // Prepare update data

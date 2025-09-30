@@ -14,17 +14,23 @@ const CreatePlace = () => {
     // Create FormData for file upload
     const submitData = new FormData()
     submitData.append('name', formData.title) // Server expects 'name'
-    submitData.append('description', formData.description)
+
+    // Only append description if provided
+    if (formData.description && formData.description.trim()) {
+      submitData.append('description', formData.description)
+    }
 
     // Only append tags if not empty
     if (formData.tags && formData.tags.trim()) {
       submitData.append('tags', formData.tags)
     }
 
-    // Add location data in the format server expects
-    submitData.append('location[address]', formData.location.address)
-    submitData.append('location[coordinates][type]', 'Point')
-    submitData.append('location[coordinates][coordinates]', JSON.stringify(formData.location.coordinates))
+    // Add location data only if location is selected
+    if (formData.location && formData.location.coordinates) {
+      submitData.append('location[address]', formData.location.address || '')
+      submitData.append('location[coordinates][type]', 'Point')
+      submitData.append('location[coordinates][coordinates]', JSON.stringify(formData.location.coordinates))
+    }
 
     // Add images (server expects this as files, not 'photos')
     imageFiles.forEach((file) => {

@@ -42,11 +42,13 @@ const EditPlace = () => {
       setPlace(fetchedPlace)
       setInitialData({
         title: fetchedPlace.name,
-        description: fetchedPlace.description,
-        location: {
+        description: fetchedPlace.description || '',
+        location: fetchedPlace.location ? {
           address: fetchedPlace.location.address,
-          coordinates: fetchedPlace.location.coordinates
-        },
+          coordinates: fetchedPlace.location.coordinates,
+          latitude: fetchedPlace.location.coordinates?.[1],
+          longitude: fetchedPlace.location.coordinates?.[0]
+        } : null,
         tags: fetchedPlace.tags ? fetchedPlace.tags.join(', ') : '',
         isFeatured: fetchedPlace.isFeatured || false
       })
@@ -64,17 +66,23 @@ const EditPlace = () => {
     // Create FormData for file upload
     const submitData = new FormData()
     submitData.append('name', formData.title)
-    submitData.append('description', formData.description)
+
+    // Only append description if provided
+    if (formData.description && formData.description.trim()) {
+      submitData.append('description', formData.description)
+    }
 
     // Only append tags if not empty
     if (formData.tags && formData.tags.trim()) {
       submitData.append('tags', formData.tags)
     }
 
-    // Add location data
-    submitData.append('location[address]', formData.location.address)
-    submitData.append('location[coordinates][type]', 'Point')
-    submitData.append('location[coordinates][coordinates]', JSON.stringify(formData.location.coordinates))
+    // Add location data only if location is selected
+    if (formData.location && formData.location.coordinates) {
+      submitData.append('location[address]', formData.location.address || '')
+      submitData.append('location[coordinates][type]', 'Point')
+      submitData.append('location[coordinates][coordinates]', JSON.stringify(formData.location.coordinates))
+    }
 
     // Add existing photos as JSON
     submitData.append('existingPhotos', JSON.stringify(updatedExistingPhotos))

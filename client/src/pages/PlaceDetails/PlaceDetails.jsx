@@ -233,10 +233,12 @@ const PlaceDetails = () => {
             </div>
 
             <div className="place-meta">
-              <div className="meta-item">
-                <MapPinIcon className="icon" />
-                <span>{place.location.address}</span>
-              </div>
+              {place.location && (
+                <div className="meta-item">
+                  <MapPinIcon className="icon" />
+                  <span>{place.location.address}</span>
+                </div>
+              )}
               <div className="meta-item">
                 <CalendarDaysIcon className="icon" />
                 <span>Posted {formatDate(place.createdAt)}</span>

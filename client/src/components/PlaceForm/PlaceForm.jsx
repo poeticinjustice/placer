@@ -95,15 +95,7 @@ const PlaceForm = ({
       return
     }
 
-    if (!formData.description.trim()) {
-      alert('Please enter a description for your place')
-      return
-    }
-
-    if (!formData.location) {
-      alert('Please select a location on the map')
-      return
-    }
+    // Description, location, and photos are now optional
 
     // Pass data to parent component for submission
     onSubmit({
@@ -142,7 +134,6 @@ const PlaceForm = ({
             onChange={handleInputChange}
             placeholder="Describe what makes this place special..."
             rows={4}
-            required
           />
 
           <FormInput
@@ -167,7 +158,7 @@ const PlaceForm = ({
 
         {/* Location */}
         <div className="form-section">
-          <h2>Location *</h2>
+          <h2>Location</h2>
           <LocationPicker
             selectedLocation={formData.location}
             onLocationChange={handleLocationChange}
@@ -247,7 +238,7 @@ const PlaceForm = ({
           </button>
           <button
             type="submit"
-            disabled={isLoading || !formData.title.trim() || !formData.location}
+            disabled={isLoading || !formData.title.trim()}
             className="submit-button"
           >
             {isLoading ? <LoadingSpinner size="small" /> : submitButtonText}
