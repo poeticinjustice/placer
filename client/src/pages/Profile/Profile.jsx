@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUserProfile } from '../../store/slices/authSlice'
 import { fetchUserPlaces } from '../../store/slices/userSlice'
@@ -11,11 +12,13 @@ import {
   MapPinIcon,
   CalendarDaysIcon,
   CameraIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  LockClosedIcon
 } from '@heroicons/react/24/outline'
 import './Profile.css'
 
 const Profile = () => {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const { user, isLoading: authLoading, error: authError } = useSelector((state) => state.auth)
   const { userPlaces, isLoading: placesLoading } = useSelector((state) => state.user)
@@ -171,13 +174,22 @@ const Profile = () => {
                   <CalendarDaysIcon className="icon" />
                   Joined {formatDate(user.joinedAt)}
                 </p>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="btn btn-secondary"
-                >
-                  <PencilIcon className="icon" />
-                  Edit Profile
-                </button>
+                <div className="profile-actions">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="btn btn-secondary"
+                  >
+                    <PencilIcon className="icon" />
+                    Edit Profile
+                  </button>
+                  <button
+                    onClick={() => navigate('/change-password')}
+                    className="btn btn-secondary"
+                  >
+                    <LockClosedIcon className="icon" />
+                    Change Password
+                  </button>
+                </div>
               </>
             ) : (
               <div className="profile-edit-form">

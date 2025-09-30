@@ -163,6 +163,12 @@
   height: 16px;
 }
 
+.profile-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
 /* Profile Edit Form */
 .profile-edit-form {
   display: flex;

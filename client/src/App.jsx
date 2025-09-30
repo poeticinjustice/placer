@@ -13,6 +13,7 @@ import PlaceDetails from './pages/PlaceDetails/PlaceDetails'
 import CreatePlace from './pages/CreatePlace/CreatePlace'
 import EditPlace from './pages/EditPlace/EditPlace'
 import Profile from './pages/Profile/Profile'
+import ChangePassword from './pages/ChangePassword/ChangePassword'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import UserManagement from './pages/Admin/UserManagement'
 import AdminPlaces from './pages/Admin/AdminPlaces'
@@ -50,6 +51,7 @@ function App() {
           <Route path="create" element={isAuthenticated ? <CreatePlace /> : <Navigate to="/auth" />} />
           <Route path="edit/:id" element={isAuthenticated ? <EditPlace /> : <Navigate to="/auth" />} />
           <Route path="profile" element={isAuthenticated ? <Profile /> : <Navigate to="/auth" />} />
+          <Route path="change-password" element={isAuthenticated ? <ChangePassword /> : <Navigate to="/auth" />} />
           <Route
             path="admin"
             element={
