@@ -21,6 +21,7 @@ const PlaceForm = ({
     description: initialData?.description || '',
     location: initialData?.location || null,
     tags: initialData?.tags || '',
+    isAnonymous: initialData?.isAnonymous || false,
     isFeatured: initialData?.isFeatured || false
   })
 
@@ -36,6 +37,7 @@ const PlaceForm = ({
         description: initialData.description || '',
         location: initialData.location || null,
         tags: initialData.tags || '',
+        isAnonymous: initialData.isAnonymous || false,
         isFeatured: initialData.isFeatured || false
       })
     }
@@ -144,6 +146,14 @@ const PlaceForm = ({
             onChange={handleInputChange}
             placeholder="outdoor, family-friendly, scenic (comma separated)"
             helpText="Separate tags with commas"
+          />
+
+          <FormCheckbox
+            label="Post anonymously"
+            name="isAnonymous"
+            checked={formData.isAnonymous}
+            onChange={handleInputChange}
+            helpText="Your name will not be displayed with this place"
           />
 
           {showFeaturedToggle && (

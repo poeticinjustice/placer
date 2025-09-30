@@ -25,6 +25,14 @@ const CreatePlace = () => {
       submitData.append('tags', formData.tags)
     }
 
+    // Add anonymous flag
+    submitData.append('isAnonymous', formData.isAnonymous)
+
+    // Add featured flag if user is admin
+    if (user?.role === 'admin') {
+      submitData.append('isFeatured', formData.isFeatured)
+    }
+
     // Add location data only if location is selected
     if (formData.location && formData.location.coordinates) {
       submitData.append('location[address]', formData.location.address || '')
@@ -73,6 +81,7 @@ const CreatePlace = () => {
           isLoading={isLoading}
           error={error}
           submitButtonText="Create Place"
+          showFeaturedToggle={user?.role === 'admin'}
         />
       </div>
     </div>

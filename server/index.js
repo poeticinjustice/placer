@@ -54,7 +54,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", "https://nominatim.openstreetmap.org"],
       imgSrc: [
         "'self'",
         "data:",

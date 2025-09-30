@@ -225,7 +225,13 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
       ...processedBody,
       author: req.user._id,
       photos,
-      tags
+      tags,
+      isAnonymous: req.body.isAnonymous === 'true' || req.body.isAnonymous === true
+    }
+
+    // Only allow admins to set isFeatured
+    if (req.user.role === 'admin' && (req.body.isFeatured === 'true' || req.body.isFeatured === true)) {
+      placeData.isFeatured = true
     }
 
     const place = new Place(placeData)
