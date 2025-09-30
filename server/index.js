@@ -61,7 +61,8 @@ app.use(helmet({
         "blob:",
         "https://res.cloudinary.com",
         "https://*.tile.openstreetmap.org",
-        "https://unpkg.com"
+        "https://unpkg.com",
+        "https://images.unsplash.com"
       ],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com"],
