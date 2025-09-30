@@ -155,7 +155,12 @@ const Dashboard = () => {
 
   const renderMapView = () => (
     <div className='places-map-container'>
-      <Map places={places} height='600px' showUserLocation={true} zoom={10} />
+      <Map
+        places={places}
+        height='600px'
+        showUserLocation={true}
+        zoom={10}
+      />
     </div>
   );
 

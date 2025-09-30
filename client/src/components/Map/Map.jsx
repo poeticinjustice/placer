@@ -39,19 +39,6 @@ const MapEvents = ({ onLocationSelect, showLocationFinder }) => {
   return null
 }
 
-// Component to update map view
-const ChangeView = ({ center, zoom }) => {
-  const map = useMap()
-
-  useEffect(() => {
-    if (center) {
-      map.setView(center, zoom || map.getZoom())
-    }
-  }, [center, zoom, map])
-
-  return null
-}
-
 // Component to show user's current location
 const LocationMarker = ({ showUserLocation, onLocationFound }) => {
   const [position, setPosition] = useState(null)
@@ -104,20 +91,11 @@ const Map = ({
   className = ''
 }) => {
   const mapRef = useRef(null)
-  const [mapCenter, setMapCenter] = useState(center)
-
-  // Handle place selection
-  const handlePlaceClick = (place) => {
-    if (place.location?.coordinates) {
-      const [lng, lat] = place.location.coordinates
-      setMapCenter([lat, lng])
-    }
-  }
 
   return (
     <div className={`map-container ${className}`} style={{ height }}>
       <MapContainer
-        center={mapCenter}
+        center={center}
         zoom={zoom}
         scrollWheelZoom={true}
         className="leaflet-map"
@@ -127,8 +105,6 @@ const Map = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
-        <ChangeView center={mapCenter} zoom={zoom} />
         <MapEvents
           onLocationSelect={onLocationSelect}
           showLocationFinder={showLocationFinder}
@@ -153,9 +129,6 @@ const Map = ({
               key={place._id}
               position={[lat, lng]}
               icon={createCustomIcon(isSelected ? 'green' : 'blue', 'medium')}
-              eventHandlers={{
-                click: () => handlePlaceClick(place)
-              }}
             >
               <Popup>
                 <div className="place-popup">

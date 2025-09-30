@@ -13,11 +13,6 @@ const Header = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Debug logging
-  console.log('Header.jsx - isAuthenticated:', isAuthenticated)
-  console.log('Header.jsx - user:', user)
-  console.log('Header.jsx - user.role:', user?.role)
-
   const handleLogout = () => {
     dispatch(logout())
     navigate('/')

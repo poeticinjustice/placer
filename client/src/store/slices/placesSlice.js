@@ -105,9 +105,11 @@ export const searchPlaces = createAsyncThunk(
       searchParams.search = searchQuery.trim()
     }
 
-    if (filters.location && filters.location.trim()) {
-      // This could be enhanced to get coordinates from the location string
-      searchParams.location = filters.location.trim()
+    // Location-based filtering with user coordinates
+    if (filters.useDistance && filters.userLat && filters.userLng) {
+      searchParams.lat = filters.userLat
+      searchParams.lng = filters.userLng
+      searchParams.radius = filters.radius || 16 // Default 16km (~10 miles)
     }
 
     if (filters.sortBy) {
@@ -116,10 +118,6 @@ export const searchPlaces = createAsyncThunk(
 
     if (filters.sortOrder) {
       searchParams.sortOrder = filters.sortOrder
-    }
-
-    if (filters.radius) {
-      searchParams.radius = filters.radius
     }
 
     return dispatch(fetchPlaces(searchParams))

@@ -29,24 +29,57 @@ router.get('/', async (req, res) => {
       query.isFeatured = true
     }
 
-    if (search) {
-      query.$text = { $search: search }
-    }
-
     if (author) {
       query.author = author
     }
 
+    // Distance-based filter (user location + radius)
+    // Note: $near cannot be combined with $text search or skip/limit in some MongoDB versions
+    // So we handle it separately
     if (lat && lng) {
-      query.location = {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [parseFloat(lng), parseFloat(lat)]
-          },
-          $maxDistance: radius * 1000 // Convert km to meters
+      const places = await Place.find({
+        ...query,
+        location: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [parseFloat(lng), parseFloat(lat)]
+            },
+            $maxDistance: radius * 1000 // Convert km to meters
+          }
         }
+      })
+        .limit(parseInt(limit) + skip) // Get more than needed, then slice
+        .populate('author', 'firstName lastName avatar isApproved')
+
+      // Apply search filter in memory if needed
+      let filteredPlaces = places
+      if (search) {
+        const searchLower = search.toLowerCase()
+        filteredPlaces = places.filter(place =>
+          place.name.toLowerCase().includes(searchLower) ||
+          place.description.toLowerCase().includes(searchLower) ||
+          place.location.address.toLowerCase().includes(searchLower)
+        )
       }
+
+      // Apply pagination
+      const paginatedPlaces = filteredPlaces.slice(skip, skip + parseInt(limit))
+
+      return res.json({
+        places: paginatedPlaces,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: filteredPlaces.length,
+          pages: Math.ceil(filteredPlaces.length / limit)
+        }
+      })
+    }
+
+    // Regular query without location filter
+    if (search) {
+      query.$text = { $search: search }
     }
 
     const sortOptions = {}
