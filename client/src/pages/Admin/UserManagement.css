@@ -339,6 +339,34 @@
   transform: translateY(-1px);
 }
 
+.action-btn.make-admin {
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.action-btn.make-admin .icon {
+  color: white;
+}
+
+.action-btn.make-admin:hover:not(:disabled) {
+  background-color: var(--primary-blue-dark);
+  transform: translateY(-1px);
+}
+
+.action-btn.remove-admin {
+  background-color: var(--system-orange);
+  color: white;
+}
+
+.action-btn.remove-admin .icon {
+  color: white;
+}
+
+.action-btn.remove-admin:hover:not(:disabled) {
+  background-color: #e67e22;
+  transform: translateY(-1px);
+}
+
 .action-btn.delete {
   background-color: var(--system-red);
   color: white;

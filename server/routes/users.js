@@ -139,13 +139,13 @@ router.get('/admin/all', authenticate, requireAdmin, async (req, res) => {
 
     const skip = (page - 1) * limit
 
-    const users = await User.find({ role: 'user' })
+    const users = await User.find({})
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit))
       .select('-password')
 
-    const total = await User.countDocuments({ role: 'user' })
+    const total = await User.countDocuments({})
 
     res.json({
       users,
@@ -234,6 +234,35 @@ router.delete('/admin/reject/:id', authenticate, requireAdmin, async (req, res) 
     res.json({ message: 'User rejected and deleted successfully' })
   } catch (error) {
     console.error('Reject user error:', error)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+router.put('/admin/toggle-admin/:id', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    if (user._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({ message: 'Cannot modify your own admin status' })
+    }
+
+    const newRole = user.role === 'admin' ? 'user' : 'admin'
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { role: newRole },
+      { new: true }
+    ).select('-password')
+
+    res.json({
+      message: `User ${newRole === 'admin' ? 'promoted to' : 'removed from'} admin successfully`,
+      user: updatedUser
+    })
+  } catch (error) {
+    console.error('Toggle admin error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })

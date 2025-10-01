@@ -15,7 +15,9 @@ import {
   CalendarDaysIcon,
   CameraIcon,
   ExclamationTriangleIcon,
-  LockClosedIcon
+  LockClosedIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 } from '@heroicons/react/24/outline'
 import './Profile.css'
 
@@ -23,8 +25,9 @@ const Profile = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { user, isLoading: authLoading, error: authError } = useSelector((state) => state.auth)
-  const { userPlaces, isLoading: placesLoading } = useSelector((state) => state.user)
+  const { userPlaces, isLoading: placesLoading, pagination } = useSelector((state) => state.user)
   const [isEditing, setIsEditing] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
   const [profileForm, setProfileForm] = useState({
     firstName: '',
     lastName: '',
@@ -47,8 +50,8 @@ const Profile = () => {
   }, [user])
 
   useEffect(() => {
-    dispatch(fetchUserPlaces({ limit: 6 }))
-  }, [dispatch])
+    dispatch(fetchUserPlaces({ page: currentPage, limit: 20 }))
+  }, [dispatch, currentPage])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -104,6 +107,11 @@ const Profile = () => {
     } else {
       return <span className="status-badge pending">Pending Approval</span>
     }
+  }
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   if (!user) {
@@ -252,11 +260,7 @@ const Profile = () => {
         <div className="profile-stats">
           <div className="stat-item">
             <span className="stat-number">{user.placesCount || 0}</span>
-            <span className="stat-label">Places</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">{userPlaces.length}</span>
-            <span className="stat-label">Recent</span>
+            <span className="stat-label">Total Places</span>
           </div>
         </div>
 
@@ -277,7 +281,7 @@ const Profile = () => {
           ) : userPlaces.length > 0 ? (
             <div className="places-grid">
               {userPlaces.map((place) => (
-                <div key={place._id} className="place-card">
+                <Link to={`/place/${place._id}`} key={place._id} className="place-card">
                   {place.photos && place.photos.length > 0 && (
                     <div className="place-image">
                       <img src={place.photos[0].url} alt={place.title} />
@@ -301,7 +305,7 @@ const Profile = () => {
                       </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
@@ -312,6 +316,33 @@ const Profile = () => {
               <Link to="/create" className="btn btn-primary">
                 Create Your First Place
               </Link>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {pagination && pagination.pages > 1 && (
+            <div className="pagination">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="pagination-btn"
+              >
+                <ChevronLeftIcon className="icon" />
+                Previous
+              </button>
+
+              <div className="pagination-info">
+                Page {currentPage} of {pagination.pages}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === pagination.pages}
+                className="pagination-btn"
+              >
+                Next
+                <ChevronRightIcon className="icon" />
+              </button>
             </div>
           )}
         </div>

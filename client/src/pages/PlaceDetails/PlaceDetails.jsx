@@ -280,7 +280,7 @@ const PlaceDetails = () => {
 
             {/* Author Info */}
             <div className="place-author">
-              <Link to={`/users/${place.author?._id}`} className="author-card">
+              <div className="author-card">
                 {place.author?.avatar ? (
                   <img src={place.author.avatar} alt={getAuthorName()} className="author-avatar" />
                 ) : (
@@ -292,7 +292,7 @@ const PlaceDetails = () => {
                   <span className="author-label">Shared by</span>
                   <span className="author-name">{getAuthorName()}</span>
                 </div>
-              </Link>
+              </div>
             </div>
           </div>
 

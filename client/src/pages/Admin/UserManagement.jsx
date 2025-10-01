@@ -19,7 +19,7 @@ import { API_URL } from '../../config/api'
 import './UserManagement.css'
 
 const UserManagement = () => {
-  const { token } = useSelector((state) => state.auth)
+  const { token, user: currentUser } = useSelector((state) => state.auth)
   const [users, setUsers] = useState([])
   const [filteredUsers, setFilteredUsers] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -129,6 +129,31 @@ const UserManagement = () => {
     } catch (err) {
       console.error('Error deleting user:', err)
       alert(err.response?.data?.message || 'Failed to delete user')
+    } finally {
+      setProcessingUserId(null)
+    }
+  }
+
+  const handleToggleAdmin = async (userId, userName, currentRole) => {
+    const action = currentRole === 'admin' ? 'remove admin privileges from' : 'make admin'
+    if (!window.confirm(`${action === 'make admin' ? 'Make' : 'Remove admin privileges from'} "${userName}"?`)) {
+      return
+    }
+
+    try {
+      setProcessingUserId(userId)
+      const response = await axios.put(
+        `${API_URL}/api/users/admin/toggle-admin/${userId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+
+      setUsers(users.map(user =>
+        user._id === userId ? response.data.user : user
+      ))
+    } catch (err) {
+      console.error('Error toggling admin:', err)
+      alert(err.response?.data?.message || 'Failed to update user role')
     } finally {
       setProcessingUserId(null)
     }
@@ -290,9 +315,9 @@ const UserManagement = () => {
                   </div>
 
                   <div className="td-actions">
-                    {user.role !== 'admin' && (
+                    {user._id !== currentUser?._id && (
                       <>
-                        {!user.isApproved && (
+                        {user.role !== 'admin' && !user.isApproved && (
                           <button
                             onClick={() => handleApprove(user._id)}
                             className="action-btn approve"
@@ -308,17 +333,32 @@ const UserManagement = () => {
                         )}
 
                         <button
-                          onClick={() => handleDelete(user._id, `${user.firstName} ${user.lastName}`)}
-                          className="action-btn delete"
+                          onClick={() => handleToggleAdmin(user._id, `${user.firstName} ${user.lastName}`, user.role)}
+                          className={`action-btn ${user.role === 'admin' ? 'remove-admin' : 'make-admin'}`}
                           disabled={processingUserId === user._id}
-                          title="Delete user"
+                          title={user.role === 'admin' ? 'Remove admin privileges' : 'Make admin'}
                         >
                           {processingUserId === user._id ? (
                             <LoadingSpinner size="small" />
                           ) : (
-                            <XCircleIcon className="icon" />
+                            <ShieldCheckIcon className="icon" />
                           )}
                         </button>
+
+                        {user.role !== 'admin' && (
+                          <button
+                            onClick={() => handleDelete(user._id, `${user.firstName} ${user.lastName}`)}
+                            className="action-btn delete"
+                            disabled={processingUserId === user._id}
+                            title="Delete user"
+                          >
+                            {processingUserId === user._id ? (
+                              <LoadingSpinner size="small" />
+                            ) : (
+                              <XCircleIcon className="icon" />
+                            )}
+                          </button>
+                        )}
                       </>
                     )}
                   </div>
