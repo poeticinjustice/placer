@@ -258,14 +258,6 @@ const Dashboard = () => {
           <div className='header-top'>
             <div className='header-text'>
               <h1>Welcome back, {user?.firstName}!</h1>
-              {!user?.isApproved && (
-                <div className='approval-notice'>
-                  <p>
-                    Your account is pending admin approval. You can update your
-                    profile but cannot create posts yet.
-                  </p>
-                </div>
-              )}
             </div>
 
             {user?.isApproved && (

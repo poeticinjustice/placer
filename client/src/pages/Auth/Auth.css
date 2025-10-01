@@ -16,10 +16,16 @@
   align-items: start;
 }
 
+/* When there's only one column (login mode), center the card */
+.auth-container:has(> :only-child) {
+  grid-template-columns: 1fr;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
 .auth-card {
   width: 100%;
   max-width: 400px;
-  margin: 0 auto;
 }
 
 .auth-form {
@@ -96,6 +102,7 @@
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
     max-width: 400px;
+    margin: 0 auto;
   }
 
   .form-row {

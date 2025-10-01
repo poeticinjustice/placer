@@ -271,7 +271,7 @@ const Profile = () => {
             {!user.isApproved && (
               <p className="approval-notice">
                 <ExclamationTriangleIcon className="icon" />
-                Your account is pending approval. You can create and edit places, but they won't be visible to others until approved.
+                Your account is pending approval. You can update your profile but cannot create places yet.
               </p>
             )}
           </div>

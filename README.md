@@ -23,12 +23,16 @@ A MERN stack application for discovering and sharing places with photos, maps, a
 
 ### Phase 2 (Completed)
 - ✅ Leaflet maps integration with geolocation
-- ✅ User profile management
+- ✅ User profile management with pagination
 - ✅ Responsive gallery views (2 columns mobile, more on desktop)
 - ✅ Search and filtering functionality
 - ✅ Place creation and editing forms
-- ✅ Admin dashboard for user approvals
+- ✅ Admin dashboard for user approvals and management
+- ✅ Admin user role management (promote/demote admins)
 - ✅ Comments system
+- ✅ Image lightbox for photo galleries
+- ✅ Anonymous posting option
+- ✅ Email notifications for new user signups
 
 ### Phase 3 (Future)
 - 🔲 Real-time features
@@ -107,13 +111,17 @@ curl http://localhost:8000/health
 - View and edit personal profile information (name, bio, location, avatar)
 - Upload profile pictures with Cloudinary integration
 - Display account approval status
-- View personal places collection with status indicators
+- View personal places collection with pagination (20 per page)
+- Click on places to view details
 - Responsive design with iOS-style interface
 
 ### Admin Features
+- View and manage all users (including admins)
 - Approve/reject user accounts
-- Manage all places and users
-- Access to admin dashboard
+- Promote users to admin or remove admin privileges
+- Manage all places with filtering and search
+- Access to comprehensive admin dashboard
+- Delete users (non-admin only)
 
 ## API Endpoints
 
@@ -139,9 +147,11 @@ curl http://localhost:8000/health
 - `GET /api/users/:id` - Get public user profile
 
 ### Admin (requires admin role)
+- `GET /api/users/admin/all` - Get all users
 - `GET /api/users/admin/pending` - Get pending users
 - `PUT /api/users/admin/approve/:id` - Approve user
-- `DELETE /api/users/admin/reject/:id` - Reject user
+- `PUT /api/users/admin/toggle-admin/:id` - Toggle admin status
+- `DELETE /api/users/admin/reject/:id` - Delete user
 
 ## Project Structure
 
