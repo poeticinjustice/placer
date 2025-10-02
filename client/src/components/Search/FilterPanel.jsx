@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { XMarkIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { geolocationService } from '../../services/geolocation'
 import './FilterPanel.css'

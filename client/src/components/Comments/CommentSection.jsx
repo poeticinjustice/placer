@@ -9,6 +9,7 @@ import {
 import LoadingSpinner from '../UI/LoadingSpinner'
 import { formatRelativeTime } from '../../utils/dateFormatter'
 import { API_URL } from '../../config/api'
+import TiptapEditor from '../Editor/TiptapEditor'
 import './CommentSection.css'
 
 const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onCommentDeleted }) => {
@@ -113,20 +114,16 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
             )}
           </div>
           <div className="comment-form-body">
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+            <TiptapEditor
+              content={newComment}
+              onChange={setNewComment}
               placeholder="Write a comment..."
-              maxLength={1000}
-              rows={3}
-              disabled={isSubmitting}
             />
             <div className="comment-form-footer">
-              <small>{newComment.length}/1000</small>
               <button
                 type="submit"
                 className="btn btn-primary btn-sm"
-                disabled={isSubmitting || !newComment.trim()}
+                disabled={isSubmitting}
               >
                 {isSubmitting ? <LoadingSpinner size="small" /> : 'Post Comment'}
               </button>
@@ -184,7 +181,10 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
                   )}
                 </div>
 
-                <p className="comment-text">{comment.content}</p>
+                <div
+                  className="comment-text"
+                  dangerouslySetInnerHTML={{ __html: comment.content }}
+                />
               </div>
             </div>
           ))

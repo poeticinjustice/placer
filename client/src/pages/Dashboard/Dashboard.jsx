@@ -270,7 +270,8 @@ const Dashboard = () => {
 
           <div className='dashboard-controls'>
             <div className='view-mode-selector'>
-              {viewModeOptions.map(({ key, icon: IconComponent, label }) => (
+              {/* eslint-disable-next-line no-unused-vars */}
+              {viewModeOptions.map(({ key, icon: Icon, label }) => (
                 <button
                   key={key}
                   onClick={() => handleViewModeChange(key)}
@@ -279,7 +280,7 @@ const Dashboard = () => {
                   }`}
                   title={label}
                 >
-                  <IconComponent className='view-mode-icon' />
+                  <Icon className='view-mode-icon' />
                   <span className='view-mode-label'>{label}</span>
                 </button>
               ))}

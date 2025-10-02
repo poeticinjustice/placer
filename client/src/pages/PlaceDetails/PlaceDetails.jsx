@@ -265,7 +265,11 @@ const PlaceDetails = () => {
 
             <div className="place-description">
               <h2>About this place</h2>
-              <p>{place.description}</p>
+              {place.description ? (
+                <div dangerouslySetInnerHTML={{ __html: place.description }} />
+              ) : (
+                <p>No description provided</p>
+              )}
             </div>
 
             {place.tags && place.tags.length > 0 && (

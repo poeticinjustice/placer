@@ -53,7 +53,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       </button>
 
       <div className="pagination-numbers">
-        {getPageNumbers().map((page, index) => {
+        {getPageNumbers().map((page) => {
           if (typeof page === 'string') {
             return (
               <span key={page} className="pagination-ellipsis">

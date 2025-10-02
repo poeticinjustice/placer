@@ -8,8 +8,7 @@ const commentSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: [true, 'Comment content is required'],
-    maxlength: [1000, 'Comment cannot be more than 1000 characters']
+    required: [true, 'Comment content is required']
   },
   isAnonymous: {
     type: Boolean,
@@ -28,8 +27,7 @@ const placeSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: false,
-    maxlength: [2000, 'Description cannot be more than 2000 characters']
+    required: false
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,

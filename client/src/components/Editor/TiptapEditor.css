@@ -1,0 +1,109 @@
+.tiptap-wrapper {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.menu-bar {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f8f9fa;
+  flex-wrap: wrap;
+}
+
+.menu-bar button {
+  padding: 6px 12px;
+  border: 1px solid #d0d0d0;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  min-width: 36px;
+}
+
+.menu-bar button:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.menu-bar button.is-active {
+  background: #4a90e2;
+  color: white;
+  border-color: #4a90e2;
+}
+
+.menu-bar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tiptap-editor {
+  padding: 16px;
+  min-height: 150px;
+  max-height: 400px;
+  overflow-y: auto;
+  outline: none;
+}
+
+.tiptap-editor:focus {
+  outline: none;
+}
+
+/* Placeholder */
+.tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Content styling */
+.tiptap-editor h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.tiptap-editor h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.tiptap-editor p {
+  margin-bottom: 0.8em;
+}
+
+.tiptap-editor ul,
+.tiptap-editor ol {
+  padding-left: 1.5em;
+  margin-bottom: 0.8em;
+}
+
+.tiptap-editor li {
+  margin-bottom: 0.3em;
+}
+
+.tiptap-editor blockquote {
+  border-left: 3px solid #4a90e2;
+  padding-left: 1em;
+  margin-left: 0;
+  font-style: italic;
+  color: #666;
+}
+
+.tiptap-editor strong {
+  font-weight: 600;
+}
+
+.tiptap-editor em {
+  font-style: italic;
+}

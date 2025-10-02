@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import LocationPicker from '../Map/LocationPicker'
 import LoadingSpinner from '../UI/LoadingSpinner'
-import { FormInput, FormTextarea, FormCheckbox, FormFileInput } from '../Form'
+import { FormInput, FormCheckbox, FormFileInput } from '../Form'
+import TiptapEditor from '../Editor/TiptapEditor'
 import './PlaceForm.css'
 
 const PlaceForm = ({
@@ -97,8 +98,6 @@ const PlaceForm = ({
       return
     }
 
-    // Description, location, and photos are now optional
-
     // Pass data to parent component for submission
     onSubmit({
       formData,
@@ -129,14 +128,14 @@ const PlaceForm = ({
             required
           />
 
-          <FormTextarea
-            label="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            placeholder="Describe what makes this place special..."
-            rows={4}
-          />
+          <div className="form-group">
+            <label>Description</label>
+            <TiptapEditor
+              content={formData.description}
+              onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
+              placeholder="Describe what makes this place special..."
+            />
+          </div>
 
           <FormInput
             label="Tags"
