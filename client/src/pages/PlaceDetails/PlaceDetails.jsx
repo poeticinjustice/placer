@@ -19,6 +19,7 @@ import Map from '../../components/Map/Map'
 import ImageLightbox from '../../components/UI/ImageLightbox'
 import { formatDate } from '../../utils/dateFormatter'
 import { API_URL } from '../../config/api'
+import usePageTitle from '../../hooks/usePageTitle'
 import './PlaceDetails.css'
 
 const PlaceDetails = () => {
@@ -26,6 +27,8 @@ const PlaceDetails = () => {
   const navigate = useNavigate()
   const { token, user, isAuthenticated } = useSelector((state) => state.auth)
   const [place, setPlace] = useState(null)
+
+  usePageTitle(place?.name || 'Place Details')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isLiked, setIsLiked] = useState(false)

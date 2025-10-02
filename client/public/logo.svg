@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Sun -->
+  <circle cx="160" cy="40" r="20" fill="#FFD700"/>
+
+  <!-- Island -->
+  <ellipse cx="100" cy="160" rx="80" ry="20" fill="#F4D03F"/>
+
+  <!-- Palm tree trunk -->
+  <path d="M95 100 Q92 130, 90 160" stroke="#8B4513" stroke-width="8" fill="none" stroke-linecap="round"/>
+
+  <!-- Palm leaves -->
+  <path d="M90 100 Q70 70, 50 60" stroke="#228B22" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M90 100 Q60 85, 40 90" stroke="#228B22" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M90 100 Q90 70, 90 50" stroke="#228B22" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M90 100 Q110 70, 130 60" stroke="#228B22" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M90 100 Q120 85, 140 90" stroke="#228B22" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+  <!-- Ocean waves -->
+  <path d="M20 140 Q40 135, 60 140 T100 140 T140 140 T180 140" stroke="#1E90FF" stroke-width="3" fill="none" opacity="0.6"/>
+  <path d="M20 150 Q40 145, 60 150 T100 150 T140 150 T180 150" stroke="#1E90FF" stroke-width="3" fill="none" opacity="0.4"/>
+</svg>

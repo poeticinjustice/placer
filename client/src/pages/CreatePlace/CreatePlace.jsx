@@ -2,9 +2,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { createPlace } from '../../store/slices/placesSlice'
 import PlaceForm from '../../components/PlaceForm/PlaceForm'
+import usePageTitle from '../../hooks/usePageTitle'
 import './CreatePlace.css'
 
 const CreatePlace = () => {
+  usePageTitle('Create Place')
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { isLoading, error } = useSelector((state) => state.places)

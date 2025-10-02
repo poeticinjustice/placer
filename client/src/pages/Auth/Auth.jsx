@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { signup, login, clearError } from '../../store/slices/authSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { FormInput } from '../../components/Form'
+import usePageTitle from '../../hooks/usePageTitle'
 import './Auth.css'
 
 const Auth = () => {
+  usePageTitle('Sign In')
   const [isLogin, setIsLogin] = useState(true)
   const [formData, setFormData] = useState({
     firstName: '',

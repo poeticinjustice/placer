@@ -5,9 +5,11 @@ import { fetchPlaces } from '../../store/slices/placesSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import Gallery from '../../components/Gallery/Gallery'
 import Pagination from '../../components/UI/Pagination'
+import usePageTitle from '../../hooks/usePageTitle'
 import './Home.css'
 
 const Home = () => {
+  usePageTitle('Home')
   const dispatch = useDispatch()
   const { places, isLoading, totalPages } = useSelector((state) => state.places)
   const { isAuthenticated } = useSelector((state) => state.auth)
