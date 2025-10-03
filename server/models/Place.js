@@ -123,7 +123,7 @@ const placeSchema = new mongoose.Schema({
 })
 
 placeSchema.index({ location: '2dsphere' })
-placeSchema.index({ name: 'text', description: 'text', 'location.address': 'text' })
+placeSchema.index({ name: 'text', description: 'text', 'location.address': 'text', tags: 'text' })
 placeSchema.index({ author: 1, createdAt: -1 })
 placeSchema.index({ tags: 1 })
 placeSchema.index({ isPublic: 1, status: 1 })

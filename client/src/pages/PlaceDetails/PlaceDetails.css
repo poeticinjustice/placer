@@ -313,6 +313,15 @@
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.tag:hover {
+  background-color: var(--primary-blue);
+  color: white;
+  transform: translateY(-1px);
 }
 
 .place-author {

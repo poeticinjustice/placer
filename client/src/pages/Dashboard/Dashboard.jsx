@@ -42,6 +42,7 @@ const Dashboard = () => {
   useEffect(() => {
     const urlViewMode = searchParams.get('view');
     const urlSearch = searchParams.get('search');
+    const urlTag = searchParams.get('tag');
     const urlPage = parseInt(searchParams.get('page')) || 1;
 
     if (urlViewMode && ['gallery', 'masonry', 'list', 'map'].includes(urlViewMode)) {
@@ -54,12 +55,26 @@ const Dashboard = () => {
 
     setCurrentPage(urlPage);
 
+    // Build fetch params
+    const fetchParams = { page: urlPage };
+
+    // Include search query if present
+    if (urlSearch) {
+      fetchParams.search = urlSearch;
+    }
+
+    // Include tag filter if present
+    if (urlTag) {
+      fetchParams.tag = urlTag;
+    }
+
     // For map view, fetch all places (no pagination)
     if (urlViewMode === 'map') {
-      dispatch(fetchPlaces({ limit: 1000 })); // Get all places
-    } else {
-      dispatch(fetchPlaces({ page: urlPage }));
+      fetchParams.limit = 1000;
+      delete fetchParams.page;
     }
+
+    dispatch(fetchPlaces(fetchParams));
   }, [dispatch, searchParams]);
 
   const handleViewModeChange = (mode) => {
@@ -303,9 +318,24 @@ const Dashboard = () => {
           <SearchBar
             onSearch={handleSearch}
             initialValue={searchQuery}
-            placeholder='Search places by name, description, or location...'
+            placeholder='Search places by name, description, location, or tags...'
             className='main-search'
           />
+          {searchParams.get('tag') && (
+            <div className='active-tag-filter'>
+              Filtering by tag: <strong>#{searchParams.get('tag')}</strong>
+              <button
+                onClick={() => {
+                  const newParams = new URLSearchParams(searchParams);
+                  newParams.delete('tag');
+                  setSearchParams(newParams);
+                }}
+                className='clear-tag-filter'
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
 
         <div className='dashboard-content'>{renderContent()}</div>

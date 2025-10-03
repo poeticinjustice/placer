@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
       limit = 20,
       search = '',
       author = '',
+      tag = '',
       sortBy = 'createdAt',
       sortOrder = 'desc',
       lat,
@@ -31,6 +32,10 @@ router.get('/', async (req, res) => {
 
     if (author) {
       query.author = author
+    }
+
+    if (tag) {
+      query.tags = tag
     }
 
     // Distance-based filter (user location + radius)
@@ -58,8 +63,9 @@ router.get('/', async (req, res) => {
         const searchLower = search.toLowerCase()
         filteredPlaces = places.filter(place =>
           place.name.toLowerCase().includes(searchLower) ||
-          place.description.toLowerCase().includes(searchLower) ||
-          place.location.address.toLowerCase().includes(searchLower)
+          (place.description && place.description.toLowerCase().includes(searchLower)) ||
+          (place.location?.address && place.location.address.toLowerCase().includes(searchLower)) ||
+          (place.tags && place.tags.some(tag => tag.toLowerCase().includes(searchLower)))
         )
       }
 

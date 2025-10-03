@@ -278,9 +278,13 @@ const PlaceDetails = () => {
             {place.tags && place.tags.length > 0 && (
               <div className="place-tags">
                 {place.tags.map((tag, index) => (
-                  <span key={index} className="tag">
+                  <Link
+                    key={index}
+                    to={`/dashboard?tag=${encodeURIComponent(tag)}`}
+                    className="tag"
+                  >
                     #{tag}
-                  </span>
+                  </Link>
                 ))}
               </div>
             )}

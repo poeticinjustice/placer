@@ -8,6 +8,7 @@ A MERN stack application for discovering and sharing places with photos, maps, a
 - **Backend**: Node.js, Express, MongoDB
 - **File Storage**: Cloudinary
 - **Maps**: Leaflet/OpenStreetMap
+- **Rich Text Editor**: Tiptap WYSIWYG
 - **Styling**: iOS-style CSS with CSS Variables
 
 ## Features

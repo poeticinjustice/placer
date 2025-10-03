@@ -477,6 +477,38 @@
   margin: 1.5rem 0;
 }
 
+.active-tag-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: #eff6ff;
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 14px;
+}
+
+.active-tag-filter strong {
+  color: #3b82f6;
+}
+
+.clear-tag-filter {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.clear-tag-filter:hover {
+  color: #1e40af;
+}
+
 @media (max-width: 768px) {
   .dashboard-search {
     margin: 1rem 16px;
