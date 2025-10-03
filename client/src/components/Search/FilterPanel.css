@@ -368,18 +368,9 @@
   align-items: center;
 }
 
-.tag-input-wrapper .search-icon {
-  position: absolute;
-  left: 12px;
-  width: 18px;
-  height: 18px;
-  color: var(--label-tertiary);
-  pointer-events: none;
-}
-
 .tag-search-input {
   width: 100%;
-  padding: 12px 16px 12px 40px;
+  padding: 12px 16px;
   border: 2px solid var(--separator);
   border-radius: var(--radius-md);
   font-size: 16px;

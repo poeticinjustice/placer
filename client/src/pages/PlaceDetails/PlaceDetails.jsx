@@ -113,7 +113,6 @@ const PlaceDetails = () => {
       await axios.delete(`${API_URL}/api/places/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      alert('Place deleted successfully')
       navigate('/dashboard')
     } catch (err) {
       console.error('Error deleting place:', err)

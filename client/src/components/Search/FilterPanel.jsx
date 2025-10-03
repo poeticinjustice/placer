@@ -177,7 +177,6 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
             <label className="filter-label">Filter by Tags</label>
             <div className="tag-autocomplete-container">
               <div className="tag-input-wrapper" ref={tagInputRef}>
-                <MagnifyingGlassIcon className="search-icon" />
                 <input
                   type="text"
                   value={tagSearchQuery}
