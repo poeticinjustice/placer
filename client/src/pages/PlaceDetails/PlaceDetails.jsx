@@ -90,8 +90,17 @@ const PlaceDetails = () => {
   }
 
   const canEdit = () => {
-    if (!isAuthenticated || !place) return false
-    return place.author._id === user._id || user.role === 'admin'
+    if (!isAuthenticated || !place || !user) return false
+
+    // Admin can edit anything
+    if (user.role === 'admin') return true
+
+    // Regular user can only edit their own content
+    // Handle both user.id (from auth state) and user._id
+    const userId = user.id || user._id
+    const authorId = place.author?._id || place.author
+
+    return authorId === userId
   }
 
   const handleDelete = async () => {

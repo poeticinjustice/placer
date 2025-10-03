@@ -72,7 +72,7 @@ router.get('/', async (req, res) => {
         }
       })
         .limit(parseInt(limit) + skip) // Get more than needed, then slice
-        .populate('author', 'firstName lastName avatar isApproved')
+        .populate('author', '_id firstName lastName avatar isApproved')
 
       // Apply search filter in memory if needed
       let filteredPlaces = places
@@ -114,7 +114,7 @@ router.get('/', async (req, res) => {
       .sort(sortOptions)
       .skip(skip)
       .limit(parseInt(limit))
-      .populate('author', 'firstName lastName avatar isApproved')
+      .populate('author', '_id firstName lastName avatar isApproved')
 
     const total = await Place.countDocuments(query)
 
@@ -138,7 +138,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const place = await Place.findById(req.params.id)
-      .populate('author', 'firstName lastName avatar isApproved')
+      .populate('author', '_id firstName lastName avatar isApproved')
 
     if (!place) {
       return res.status(404).json({ message: 'Place not found' })
@@ -146,7 +146,7 @@ router.get('/:id', async (req, res) => {
 
     // Populate comments if they exist
     if (place.comments && place.comments.length > 0) {
-      await place.populate('comments.author', 'firstName lastName avatar')
+      await place.populate('comments.author', '_id firstName lastName avatar')
     }
 
     if (!place.isPublic && place.status !== 'published') {
@@ -263,7 +263,7 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
     })
 
     const populatedPlace = await Place.findById(place._id)
-      .populate('author', 'firstName lastName avatar isApproved')
+      .populate('author', '_id firstName lastName avatar isApproved')
 
     res.status(201).json({
       message: 'Place created successfully',
@@ -283,7 +283,13 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
       return res.status(404).json({ message: 'Place not found' })
     }
 
-    if (place.author.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    // Extract author ID - handle both ObjectId and populated object
+    const authorId = place.author._id
+      ? place.author._id.toString()
+      : place.author.toString()
+    const userId = req.user._id.toString()
+
+    if (authorId !== userId && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this place' })
     }
 
@@ -351,7 +357,7 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
       req.params.id,
       updateData,
       { new: true, runValidators: true }
-    ).populate('author', 'firstName lastName avatar isApproved')
+    ).populate('author', '_id firstName lastName avatar isApproved')
 
     res.json({
       message: 'Place updated successfully',
@@ -371,7 +377,13 @@ router.delete('/:id', authenticate, async (req, res) => {
       return res.status(404).json({ message: 'Place not found' })
     }
 
-    if (place.author.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    // Extract author ID - handle both ObjectId and populated object
+    const authorId = place.author._id
+      ? place.author._id.toString()
+      : place.author.toString()
+    const userId = req.user._id.toString()
+
+    if (authorId !== userId && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to delete this place' })
     }
 
@@ -449,7 +461,7 @@ router.post('/:id/comments', authenticate, [
     await place.save()
 
     const populatedPlace = await Place.findById(place._id)
-      .populate('comments.author', 'firstName lastName avatar')
+      .populate('comments.author', '_id firstName lastName avatar')
 
     const newComment = populatedPlace.comments[populatedPlace.comments.length - 1]
 
@@ -477,8 +489,14 @@ router.delete('/:id/comments/:commentId', authenticate, async (req, res) => {
       return res.status(404).json({ message: 'Comment not found' })
     }
 
+    // Extract comment author ID - handle both ObjectId and populated object
+    const commentAuthorId = comment.author._id
+      ? comment.author._id.toString()
+      : comment.author.toString()
+    const userId = req.user._id.toString()
+
     // Only comment author or admin can delete
-    if (comment.author.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    if (commentAuthorId !== userId && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to delete this comment' })
     }
 

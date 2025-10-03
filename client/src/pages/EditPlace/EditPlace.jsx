@@ -33,7 +33,11 @@ const EditPlace = () => {
       const fetchedPlace = response.data.place
 
       // Check if user is authorized to edit
-      if (fetchedPlace.author._id !== user._id && !isAdmin) {
+      // Handle both user.id (from auth state) and user._id
+      const userId = user.id || user._id
+      const authorId = fetchedPlace.author?._id || fetchedPlace.author
+
+      if (authorId !== userId && !isAdmin) {
         alert('You are not authorized to edit this place')
         navigate(`/place/${id}`)
         return

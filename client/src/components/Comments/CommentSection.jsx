@@ -82,8 +82,17 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
   }
 
   const canDeleteComment = (comment) => {
-    if (!isAuthenticated) return false
-    return comment.author._id === user._id || user.role === 'admin'
+    if (!isAuthenticated || !user) return false
+
+    // Admin can delete anything
+    if (user.role === 'admin') return true
+
+    // Regular user can only delete their own comments
+    // Handle both user.id (from auth state) and user._id
+    const userId = user.id || user._id
+    const commentAuthorId = comment.author?._id || comment.author
+
+    return commentAuthorId === userId
   }
 
   return (
