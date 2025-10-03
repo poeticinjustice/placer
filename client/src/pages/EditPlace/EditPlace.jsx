@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
@@ -22,11 +22,7 @@ const EditPlace = () => {
 
   const isAdmin = user?.role === 'admin'
 
-  useEffect(() => {
-    fetchPlace()
-  }, [id])
-
-  const fetchPlace = async () => {
+  const fetchPlace = useCallback(async () => {
     try {
       setLoadingPlace(true)
       const response = await axios.get(`${API_URL}/api/places/${id}`)
@@ -64,7 +60,11 @@ const EditPlace = () => {
     } finally {
       setLoadingPlace(false)
     }
-  }
+  }, [id, user, isAdmin, navigate])
+
+  useEffect(() => {
+    fetchPlace()
+  }, [fetchPlace])
 
   const handleSubmit = async ({ formData, imageFiles, existingPhotos: updatedExistingPhotos }) => {
     // Create FormData for file upload
@@ -142,6 +142,7 @@ const EditPlace = () => {
           error={error}
           submitButtonText="Update Place"
           showFeaturedToggle={isAdmin}
+          showAnonymousOption={false}
         />
       </div>
     </div>

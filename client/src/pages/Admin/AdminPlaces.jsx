@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
@@ -29,11 +29,7 @@ const AdminPlaces = () => {
     pages: 0
   })
 
-  useEffect(() => {
-    fetchPlaces()
-  }, [pagination.page])
-
-  const fetchPlaces = async () => {
+  const fetchPlaces = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
@@ -51,7 +47,11 @@ const AdminPlaces = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [pagination.page, pagination.limit, token])
+
+  useEffect(() => {
+    fetchPlaces()
+  }, [fetchPlaces])
 
   const handleToggleFeatured = async (placeId) => {
     try {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
@@ -37,11 +37,7 @@ const PlaceDetails = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
 
-  useEffect(() => {
-    fetchPlace()
-  }, [id])
-
-  const fetchPlace = async () => {
+  const fetchPlace = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await axios.get(`${API_URL}/api/places/${id}`)
@@ -60,7 +56,11 @@ const PlaceDetails = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [id, isAuthenticated, user])
+
+  useEffect(() => {
+    fetchPlace()
+  }, [fetchPlace])
 
   const handleLike = async () => {
     if (!isAuthenticated) {

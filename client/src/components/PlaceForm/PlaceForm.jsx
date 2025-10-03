@@ -16,7 +16,8 @@ const PlaceForm = ({
   submitButtonText = 'Submit',
   title = 'Place Form',
   subtitle = '',
-  showFeaturedToggle = false
+  showFeaturedToggle = false,
+  showAnonymousOption = true
 }) => {
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
@@ -47,7 +48,7 @@ const PlaceForm = ({
     if (existingPhotos && existingPhotos.length > 0) {
       setCurrentExistingPhotos(existingPhotos)
     }
-  }, [initialData, existingPhotos.length])
+  }, [initialData, existingPhotos])
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -145,13 +146,15 @@ const PlaceForm = ({
             helpText="Select from existing tags or type your own. Press comma or Enter to add custom tags."
           />
 
-          <FormCheckbox
-            label="Post anonymously"
-            name="isAnonymous"
-            checked={formData.isAnonymous}
-            onChange={handleInputChange}
-            helpText="Your name will not be displayed with this place"
-          />
+          {showAnonymousOption && (
+            <FormCheckbox
+              label="Post anonymously"
+              name="isAnonymous"
+              checked={formData.isAnonymous}
+              onChange={handleInputChange}
+              helpText="Your name will not be displayed with this place"
+            />
+          )}
 
           {showFeaturedToggle && (
             <FormCheckbox

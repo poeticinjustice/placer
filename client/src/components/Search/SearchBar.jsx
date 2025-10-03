@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useDebounce } from '../../hooks/useDebounce'
 import './SearchBar.css'
@@ -12,12 +12,9 @@ const SearchBar = ({
   const [query, setQuery] = useState(initialValue)
 
   // Debounce search queries to avoid too many API calls
-  const debouncedSearch = useCallback(
-    useDebounce((searchQuery) => {
-      onSearch(searchQuery)
-    }, 300),
-    [onSearch]
-  )
+  const debouncedSearch = useDebounce((searchQuery) => {
+    onSearch(searchQuery)
+  }, 300)
 
   const handleInputChange = (e) => {
     const value = e.target.value

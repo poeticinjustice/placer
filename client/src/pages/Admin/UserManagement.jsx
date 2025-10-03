@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
@@ -28,15 +28,7 @@ const UserManagement = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('all') // 'all', 'approved', 'pending'
 
-  useEffect(() => {
-    fetchAllUsers()
-  }, [])
-
-  useEffect(() => {
-    filterUsers()
-  }, [searchQuery, filterStatus, users])
-
-  const fetchAllUsers = async () => {
+  const fetchAllUsers = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
@@ -65,9 +57,9 @@ const UserManagement = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [token])
 
-  const filterUsers = () => {
+  const filterUsers = useCallback(() => {
     let filtered = [...users]
 
     // Apply status filter
@@ -89,7 +81,15 @@ const UserManagement = () => {
     }
 
     setFilteredUsers(filtered)
-  }
+  }, [users, searchQuery, filterStatus])
+
+  useEffect(() => {
+    fetchAllUsers()
+  }, [fetchAllUsers])
+
+  useEffect(() => {
+    filterUsers()
+  }, [filterUsers])
 
   const handleApprove = async (userId) => {
     if (!window.confirm('Approve this user?')) return

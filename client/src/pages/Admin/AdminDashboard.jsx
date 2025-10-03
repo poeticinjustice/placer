@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
@@ -30,11 +30,7 @@ const AdminDashboard = () => {
     pages: 0
   })
 
-  useEffect(() => {
-    fetchPendingUsers()
-  }, [pagination.page])
-
-  const fetchPendingUsers = async () => {
+  const fetchPendingUsers = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
@@ -52,7 +48,11 @@ const AdminDashboard = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [pagination.page, pagination.limit, token])
+
+  useEffect(() => {
+    fetchPendingUsers()
+  }, [fetchPendingUsers])
 
   const handleApprove = async (userId) => {
     if (!window.confirm('Are you sure you want to approve this user?')) {
