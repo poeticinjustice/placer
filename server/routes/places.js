@@ -7,6 +7,23 @@ import { uploadMiddleware, uploadToCloudinary } from '../middleware/upload.js'
 
 const router = express.Router()
 
+// Get all unique tags with counts
+router.get('/tags', async (req, res) => {
+  try {
+    const tags = await Place.aggregate([
+      { $match: { isPublic: true, status: 'published' } },
+      { $unwind: '$tags' },
+      { $group: { _id: '$tags', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $project: { tag: '$_id', count: 1, _id: 0 } }
+    ])
+    res.json({ tags })
+  } catch (error) {
+    console.error('Fetch tags error:', error)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
 router.get('/', async (req, res) => {
   try {
     const {

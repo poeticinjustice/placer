@@ -122,6 +122,13 @@ export const searchPlaces = createAsyncThunk(
       searchParams.sortOrder = filters.sortOrder
     }
 
+    // Tag filtering
+    if (filters.tags && filters.tags.length > 0) {
+      // Backend currently supports single tag, so we'll use the first one
+      // If you want to support multiple tags, you'll need to update the backend
+      searchParams.tag = filters.tags[0]
+    }
+
     return dispatch(fetchPlaces(searchParams))
   }
 )

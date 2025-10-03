@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { XMarkIcon, MapPinIcon } from '@heroicons/react/24/outline'
+import { useState, useEffect, useRef } from 'react'
+import { XMarkIcon, MapPinIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { geolocationService } from '../../services/geolocation'
+import { API_URL } from '../../config/api'
 import './FilterPanel.css'
 
 const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
@@ -9,6 +10,12 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
   const [locationLoading, setLocationLoading] = useState(false)
   const [locationError, setLocationError] = useState(null)
   const [distanceUnit, setDistanceUnit] = useState('mi') // 'mi' or 'km'
+  const [availableTags, setAvailableTags] = useState([])
+  const [tagSearchQuery, setTagSearchQuery] = useState('')
+  const [showTagDropdown, setShowTagDropdown] = useState(false)
+  const [selectedTags, setSelectedTags] = useState([])
+  const tagInputRef = useRef(null)
+  const dropdownRef = useRef(null)
 
   const sortOptions = [
     { value: 'createdAt-desc', label: 'Newest First' },
@@ -24,6 +31,41 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
     { mi: 50, km: 80 },
     { mi: 100, km: 161 }
   ]
+
+  // Fetch available tags on mount
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/places/tags`)
+        const data = await response.json()
+        setAvailableTags(data.tags || [])
+      } catch (error) {
+        console.error('Error fetching tags:', error)
+      }
+    }
+    if (isOpen) {
+      fetchTags()
+    }
+  }, [isOpen])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+          tagInputRef.current && !tagInputRef.current.contains(event.target)) {
+        setShowTagDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Filter tags based on search query
+  const filteredTags = availableTags.filter(({ tag }) => {
+    const matchesSearch = tagSearchQuery === '' || tag.toLowerCase().includes(tagSearchQuery.toLowerCase())
+    const notSelected = !selectedTags.includes(tag)
+    return matchesSearch && notSelected
+  })
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...localFilters, [key]: value }
@@ -56,6 +98,29 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
     setLocationError(null)
   }
 
+  const handleAddTag = (tag) => {
+    const newSelectedTags = [...selectedTags, tag]
+    setSelectedTags(newSelectedTags)
+    handleFilterChange('tags', newSelectedTags)
+    setTagSearchQuery('')
+    setShowTagDropdown(false)
+  }
+
+  const handleRemoveTag = (tagToRemove) => {
+    const newSelectedTags = selectedTags.filter(tag => tag !== tagToRemove)
+    setSelectedTags(newSelectedTags)
+    handleFilterChange('tags', newSelectedTags.length > 0 ? newSelectedTags : null)
+  }
+
+  const handleTagInputChange = (e) => {
+    setTagSearchQuery(e.target.value)
+    setShowTagDropdown(true)
+  }
+
+  const handleTagInputFocus = () => {
+    setShowTagDropdown(true)
+  }
+
   const handleReset = () => {
     const resetFilters = {
       sortBy: 'createdAt',
@@ -63,12 +128,15 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
       radius: distanceUnit === 'mi' ? 10 : 16,
       useDistance: false,
       userLat: null,
-      userLng: null
+      userLng: null,
+      tags: null
     }
     setLocalFilters(resetFilters)
     onFiltersChange(resetFilters)
     setUserLocation(null)
     setLocationError(null)
+    setSelectedTags([])
+    setTagSearchQuery('')
   }
 
   const getRadiusDisplay = () => {
@@ -104,6 +172,55 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
         </div>
 
         <div className="filter-panel-content">
+          {/* Tag Filter */}
+          <div className="filter-group">
+            <label className="filter-label">Filter by Tags</label>
+            <div className="tag-autocomplete-container">
+              <div className="tag-input-wrapper" ref={tagInputRef}>
+                <MagnifyingGlassIcon className="search-icon" />
+                <input
+                  type="text"
+                  value={tagSearchQuery}
+                  onChange={handleTagInputChange}
+                  onFocus={handleTagInputFocus}
+                  placeholder="Search tags..."
+                  className="tag-search-input"
+                />
+              </div>
+
+              {showTagDropdown && filteredTags.length > 0 && (
+                <div className="tag-dropdown" ref={dropdownRef}>
+                  {filteredTags.slice(0, 10).map(({ tag, count }) => (
+                    <button
+                      key={tag}
+                      onClick={() => handleAddTag(tag)}
+                      className="tag-dropdown-item"
+                    >
+                      <span className="tag-name">#{tag}</span>
+                      <span className="tag-count">{count}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {selectedTags.length > 0 && (
+                <div className="selected-tags">
+                  {selectedTags.map(tag => (
+                    <span key={tag} className="tag-chip">
+                      #{tag}
+                      <button
+                        onClick={() => handleRemoveTag(tag)}
+                        className="tag-remove-btn"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Sort Filter */}
           <div className="filter-group">
             <label className="filter-label">Sort By</label>

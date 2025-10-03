@@ -3,6 +3,7 @@ import LocationPicker from '../Map/LocationPicker'
 import LoadingSpinner from '../UI/LoadingSpinner'
 import { FormInput, FormCheckbox, FormFileInput } from '../Form'
 import TiptapEditor from '../Editor/TiptapEditor'
+import TagAutocomplete from '../Form/TagAutocomplete'
 import './PlaceForm.css'
 
 const PlaceForm = ({
@@ -137,14 +138,11 @@ const PlaceForm = ({
             />
           </div>
 
-          <FormInput
-            label="Tags"
-            type="text"
-            name="tags"
+          <TagAutocomplete
             value={formData.tags}
-            onChange={handleInputChange}
-            placeholder="outdoor, family-friendly, scenic (comma separated)"
-            helpText="Separate tags with commas"
+            onChange={(value) => setFormData(prev => ({ ...prev, tags: value }))}
+            placeholder="Search or type tags (comma or Enter to add)"
+            helpText="Select from existing tags or type your own. Press comma or Enter to add custom tags."
           />
 
           <FormCheckbox
