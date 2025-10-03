@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUserProfile } from '../../store/slices/authSlice'
-import { fetchUserPlaces } from '../../store/slices/userSlice'
+import { fetchUserPlaces, fetchUserComments } from '../../store/slices/userSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { formatDate } from '../../utils/dateFormatter'
 import { FormInput, FormTextarea } from '../../components/Form'
+import Tabs from '../../components/UI/Tabs'
 import {
   UserIcon,
   PencilIcon,
@@ -17,7 +18,8 @@ import {
   ExclamationTriangleIcon,
   LockClosedIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ChatBubbleLeftIcon
 } from '@heroicons/react/24/outline'
 import './Profile.css'
 
@@ -33,9 +35,11 @@ const Profile = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { user, isLoading: authLoading, error: authError } = useSelector((state) => state.auth)
-  const { userPlaces, isLoading: placesLoading, pagination } = useSelector((state) => state.user)
+  const { userPlaces, userComments, isLoading: placesLoading, isLoadingComments, pagination, commentsPagination } = useSelector((state) => state.user)
   const [isEditing, setIsEditing] = useState(false)
+  const [activeTab, setActiveTab] = useState('places')
   const [currentPage, setCurrentPage] = useState(1)
+  const [currentCommentsPage, setCurrentCommentsPage] = useState(1)
   const [profileForm, setProfileForm] = useState({
     firstName: '',
     lastName: '',
@@ -60,6 +64,12 @@ const Profile = () => {
   useEffect(() => {
     dispatch(fetchUserPlaces({ page: currentPage, limit: 20 }))
   }, [dispatch, currentPage])
+
+  useEffect(() => {
+    if (activeTab === 'comments') {
+      dispatch(fetchUserComments({ page: currentCommentsPage, limit: 20 }))
+    }
+  }, [dispatch, activeTab, currentCommentsPage])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -264,95 +274,163 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Profile Stats */}
-        <div className="profile-stats">
-          <div className="stat-item">
-            <span className="stat-number">{user.placesCount || 0}</span>
-            <span className="stat-label">Total Places</span>
-          </div>
-        </div>
+        {/* User's Places and Comments Tabs */}
+        <div className="profile-content">
+          {!user.isApproved && (
+            <div className="approval-notice-banner">
+              <ExclamationTriangleIcon className="icon" />
+              Your account is pending approval. You can update your profile but cannot create places yet.
+            </div>
+          )}
 
-        {/* User's Places */}
-        <div className="profile-places">
-          <div className="section-header">
-            <h2>My Places</h2>
-            {!user.isApproved && (
-              <p className="approval-notice">
-                <ExclamationTriangleIcon className="icon" />
-                Your account is pending approval. You can update your profile but cannot create places yet.
-              </p>
-            )}
-          </div>
+          <Tabs
+            tabs={[
+              {
+                id: 'places',
+                label: 'My Places',
+                icon: <MapPinIcon />,
+                count: pagination?.total,
+                content: (
+                  <>
+                    {placesLoading ? (
+                      <LoadingSpinner />
+                    ) : userPlaces.length > 0 ? (
+                      <>
+                        <div className="places-grid">
+                          {userPlaces.map((place) => (
+                            <Link to={`/place/${place._id}`} key={place._id} className="place-card">
+                              {place.photos && place.photos.length > 0 && (
+                                <div className="place-image">
+                                  <img src={place.photos[0].url} alt={place.title} />
+                                </div>
+                              )}
+                              <div className="place-content">
+                                <h3>{place.title}</h3>
+                                {place.description && (
+                                  <p className="place-description">
+                                    {stripHtml(place.description).length > 100
+                                      ? `${stripHtml(place.description).substring(0, 100)}...`
+                                      : stripHtml(place.description)}
+                                  </p>
+                                )}
+                                <div className="place-meta">
+                                  <span className={`status ${place.status}`}>
+                                    {place.status}
+                                  </span>
+                                  <span className="date">
+                                    {formatDate(place.createdAt)}
+                                  </span>
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
 
-          {placesLoading ? (
-            <LoadingSpinner />
-          ) : userPlaces.length > 0 ? (
-            <div className="places-grid">
-              {userPlaces.map((place) => (
-                <Link to={`/place/${place._id}`} key={place._id} className="place-card">
-                  {place.photos && place.photos.length > 0 && (
-                    <div className="place-image">
-                      <img src={place.photos[0].url} alt={place.title} />
-                    </div>
-                  )}
-                  <div className="place-content">
-                    <h3>{place.title}</h3>
-                    {place.description && (
-                      <p className="place-description">
-                        {stripHtml(place.description).length > 100
-                          ? `${stripHtml(place.description).substring(0, 100)}...`
-                          : stripHtml(place.description)}
-                      </p>
+                        {pagination && pagination.pages > 1 && (
+                          <div className="pagination">
+                            <button
+                              onClick={() => handlePageChange(currentPage - 1)}
+                              disabled={currentPage === 1}
+                              className="pagination-btn"
+                            >
+                              <ChevronLeftIcon className="icon" />
+                              Previous
+                            </button>
+                            <div className="pagination-info">
+                              Page {currentPage} of {pagination.pages}
+                            </div>
+                            <button
+                              onClick={() => handlePageChange(currentPage + 1)}
+                              disabled={currentPage === pagination.pages}
+                              className="pagination-btn"
+                            >
+                              Next
+                              <ChevronRightIcon className="icon" />
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="empty-state">
+                        <MapPinIcon className="empty-icon" />
+                        <h3>No places yet</h3>
+                        <p>Start sharing amazing places with the community!</p>
+                        <Link to="/create" className="btn btn-primary">
+                          Create Your First Place
+                        </Link>
+                      </div>
                     )}
-                    <div className="place-meta">
-                      <span className={`status ${place.status}`}>
-                        {place.status}
-                      </span>
-                      <span className="date">
-                        {formatDate(place.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <MapPinIcon className="empty-icon" />
-              <h3>No places yet</h3>
-              <p>Start sharing amazing places with the community!</p>
-              <Link to="/create" className="btn btn-primary">
-                Create Your First Place
-              </Link>
-            </div>
-          )}
+                  </>
+                )
+              },
+              {
+                id: 'comments',
+                label: 'My Comments',
+                icon: <ChatBubbleLeftIcon />,
+                count: commentsPagination?.total,
+                content: (
+                  <>
+                    {isLoadingComments ? (
+                      <LoadingSpinner />
+                    ) : userComments.length > 0 ? (
+                      <>
+                        <div className="comments-list">
+                          {userComments.map((comment) => (
+                            <Link to={`/place/${comment.place._id}`} key={comment._id} className="comment-card">
+                              {comment.place.photo && (
+                                <div className="comment-place-image">
+                                  <img src={comment.place.photo} alt={comment.place.name} />
+                                </div>
+                              )}
+                              <div className="comment-content">
+                                <div className="comment-header">
+                                  <h4>{comment.place.name}</h4>
+                                  <span className="comment-date">{formatDate(comment.createdAt)}</span>
+                                </div>
+                                <p className="comment-text">{stripHtml(comment.content)}</p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
 
-          {/* Pagination */}
-          {pagination && pagination.pages > 1 && (
-            <div className="pagination">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="pagination-btn"
-              >
-                <ChevronLeftIcon className="icon" />
-                Previous
-              </button>
-
-              <div className="pagination-info">
-                Page {currentPage} of {pagination.pages}
-              </div>
-
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === pagination.pages}
-                className="pagination-btn"
-              >
-                Next
-                <ChevronRightIcon className="icon" />
-              </button>
-            </div>
-          )}
+                        {commentsPagination && commentsPagination.pages > 1 && (
+                          <div className="pagination">
+                            <button
+                              onClick={() => setCurrentCommentsPage(currentCommentsPage - 1)}
+                              disabled={currentCommentsPage === 1}
+                              className="pagination-btn"
+                            >
+                              <ChevronLeftIcon className="icon" />
+                              Previous
+                            </button>
+                            <div className="pagination-info">
+                              Page {currentCommentsPage} of {commentsPagination.pages}
+                            </div>
+                            <button
+                              onClick={() => setCurrentCommentsPage(currentCommentsPage + 1)}
+                              disabled={currentCommentsPage === commentsPagination.pages}
+                              className="pagination-btn"
+                            >
+                              Next
+                              <ChevronRightIcon className="icon" />
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="empty-state">
+                        <ChatBubbleLeftIcon className="empty-icon" />
+                        <h3>No comments yet</h3>
+                        <p>Start commenting on places to share your thoughts!</p>
+                      </div>
+                    )}
+                  </>
+                )
+              }
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
         </div>
       </div>
     </div>

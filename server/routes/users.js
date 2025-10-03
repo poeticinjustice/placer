@@ -93,6 +93,64 @@ router.get('/places', authenticate, async (req, res) => {
   }
 })
 
+router.get('/comments', authenticate, async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 20
+    } = req.query
+
+    const skip = (page - 1) * limit
+
+    // Find all places that have comments by this user
+    const places = await Place.find({
+      'comments.author': req.user._id
+    })
+      .select('_id name comments photos')
+      .populate('comments.author', '_id firstName lastName avatar')
+      .sort({ 'comments.createdAt': -1 })
+
+    // Extract user's comments from all places
+    let userComments = []
+    places.forEach(place => {
+      const placeComments = place.comments
+        .filter(comment => comment.author._id.toString() === req.user._id.toString())
+        .map(comment => ({
+          _id: comment._id,
+          content: comment.content,
+          isAnonymous: comment.isAnonymous,
+          createdAt: comment.createdAt,
+          place: {
+            _id: place._id,
+            name: place.name,
+            photo: place.photos && place.photos.length > 0 ? place.photos[0].url : null
+          }
+        }))
+      userComments = [...userComments, ...placeComments]
+    })
+
+    // Sort by date
+    userComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+    // Paginate
+    const total = userComments.length
+    const paginatedComments = userComments.slice(skip, skip + parseInt(limit))
+
+    res.json({
+      comments: paginatedComments,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    })
+  } catch (error) {
+    console.error('Get user comments error:', error)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-email')
