@@ -107,3 +107,35 @@
 .tiptap-editor em {
   font-style: italic;
 }
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .menu-bar {
+    gap: 2px;
+    padding: 6px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .menu-bar button {
+    padding: 6px 8px;
+    font-size: 13px;
+    min-width: 32px;
+    flex-shrink: 0;
+  }
+
+  .tiptap-editor {
+    padding: 12px;
+    min-height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-bar button {
+    padding: 5px 6px;
+    font-size: 12px;
+    min-width: 28px;
+  }
+}
