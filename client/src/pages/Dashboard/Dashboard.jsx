@@ -28,6 +28,13 @@ import FilterPanel from '../../components/Search/FilterPanel';
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const stripHtml = (html) => {
+    if (!html) return ''
+    const tmp = document.createElement('div')
+    tmp.innerHTML = html
+    const text = tmp.textContent || tmp.innerText || ''
+    return text.trim()
+  }
   usePageTitle('Dashboard');
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -196,7 +203,7 @@ const Dashboard = () => {
             <div className='list-item-content'>
               <h3>{place.name || place.title}</h3>
               {place.description && (
-                <p>{place.description.substring(0, 200)}...</p>
+                <p>{stripHtml(place.description).substring(0, 200)}...</p>
               )}
               <div className='list-item-meta'>
                 {place.location?.address && (

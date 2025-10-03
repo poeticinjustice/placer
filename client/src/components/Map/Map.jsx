@@ -92,6 +92,14 @@ const Map = ({
 }) => {
   const mapRef = useRef(null)
 
+  const stripHtml = (html) => {
+    if (!html) return ''
+    const tmp = document.createElement('div')
+    tmp.innerHTML = html
+    const text = tmp.textContent || tmp.innerText || ''
+    return text.trim()
+  }
+
   return (
     <div className={`map-container ${className}`} style={{ height }}>
       <MapContainer
@@ -134,7 +142,7 @@ const Map = ({
                 <div className="place-popup">
                   <h3>{place.title}</h3>
                   {place.description && (
-                    <p>{place.description.substring(0, 100)}...</p>
+                    <p>{stripHtml(place.description).substring(0, 100)}...</p>
                   )}
                   {place.location?.address && (
                     <p className="address">{place.location.address}</p>

@@ -16,6 +16,14 @@ const PlaceCard = ({
     return `${place.author.firstName} ${place.author.lastName || ''}`.trim()
   }
 
+  const stripHtml = (html) => {
+    if (!html) return ''
+    const tmp = document.createElement('div')
+    tmp.innerHTML = html
+    const text = tmp.textContent || tmp.innerText || ''
+    return text.trim()
+  }
+
   const cardClasses = [
     'place-card',
     `place-card--${variant}`,
@@ -77,7 +85,7 @@ const PlaceCard = ({
 
             {showDescription && place.description && (
               <p className="place-card__description">
-                {place.description}
+                {stripHtml(place.description)}
               </p>
             )}
 

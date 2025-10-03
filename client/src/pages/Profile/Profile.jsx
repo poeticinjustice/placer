@@ -22,6 +22,14 @@ import {
 import './Profile.css'
 
 const Profile = () => {
+  const stripHtml = (html) => {
+    if (!html) return ''
+    const tmp = document.createElement('div')
+    tmp.innerHTML = html
+    const text = tmp.textContent || tmp.innerText || ''
+    return text.trim()
+  }
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { user, isLoading: authLoading, error: authError } = useSelector((state) => state.auth)
@@ -291,9 +299,9 @@ const Profile = () => {
                     <h3>{place.title}</h3>
                     {place.description && (
                       <p className="place-description">
-                        {place.description.length > 100
-                          ? `${place.description.substring(0, 100)}...`
-                          : place.description}
+                        {stripHtml(place.description).length > 100
+                          ? `${stripHtml(place.description).substring(0, 100)}...`
+                          : stripHtml(place.description)}
                       </p>
                     )}
                     <div className="place-meta">
