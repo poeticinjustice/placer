@@ -153,8 +153,6 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Place not found' })
     }
 
-    await place.incrementViews()
-
     res.json({ place })
   } catch (error) {
     console.error('Fetch place error:', error)
@@ -334,7 +332,7 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
     }
 
     // Process tags - split comma-separated string into array
-    if (processedBody.tags && typeof processedBody.tags === 'string') {
+    if (typeof processedBody.tags === 'string') {
       processedBody.tags = processedBody.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
     }
 

@@ -5,7 +5,6 @@ import axios from 'axios'
 import {
   MapPinIcon,
   CalendarDaysIcon,
-  EyeIcon,
   HeartIcon,
   ArrowLeftIcon,
   UserCircleIcon,
@@ -259,10 +258,6 @@ const PlaceDetails = () => {
               <div className="meta-item">
                 <CalendarDaysIcon className="icon" />
                 <span>Posted {formatDate(place.createdAt)}</span>
-              </div>
-              <div className="meta-item">
-                <EyeIcon className="icon" />
-                <span>{place.views || 0} views</span>
               </div>
             </div>
 

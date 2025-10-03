@@ -72,10 +72,8 @@ const EditPlace = () => {
       submitData.append('description', formData.description)
     }
 
-    // Only append tags if not empty
-    if (formData.tags && formData.tags.trim()) {
-      submitData.append('tags', formData.tags)
-    }
+    // Always send tags, even if empty, so backend knows to clear them
+    submitData.append('tags', formData.tags || '')
 
     // Add location data only if location is selected
     if (formData.location && formData.location.coordinates) {

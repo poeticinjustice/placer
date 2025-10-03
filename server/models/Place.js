@@ -101,10 +101,6 @@ const placeSchema = new mongoose.Schema({
       ref: 'User'
     }
   }],
-  views: {
-    type: Number,
-    default: 0
-  },
   isPublic: {
     type: Boolean,
     default: true
@@ -144,10 +140,5 @@ placeSchema.pre(/^find/, function(next) {
   })
   next()
 })
-
-placeSchema.methods.incrementViews = function() {
-  this.views += 1
-  return this.save()
-}
 
 export default mongoose.model('Place', placeSchema)

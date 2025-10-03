@@ -22,10 +22,8 @@ const CreatePlace = () => {
       submitData.append('description', formData.description)
     }
 
-    // Only append tags if not empty
-    if (formData.tags && formData.tags.trim()) {
-      submitData.append('tags', formData.tags)
-    }
+    // Always send tags, even if empty
+    submitData.append('tags', formData.tags || '')
 
     // Add anonymous flag
     submitData.append('isAnonymous', formData.isAnonymous)

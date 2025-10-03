@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { MapPinIcon, EyeIcon, HeartIcon } from '@heroicons/react/24/outline'
+import { MapPinIcon, HeartIcon } from '@heroicons/react/24/outline'
 import { formatDateShort } from '../../utils/dateFormatter'
 import './PlaceCard.css'
 
@@ -102,12 +102,6 @@ const PlaceCard = ({
 
               {showStats && (
                 <div className="place-card__stats">
-                  {place.views !== undefined && (
-                    <span className="stat">
-                      <EyeIcon className="stat-icon" />
-                      {place.views}
-                    </span>
-                  )}
                   {place.likesCount !== undefined && (
                     <span className="stat">
                       <HeartIcon className="stat-icon" />
