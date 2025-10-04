@@ -51,8 +51,10 @@ const PlaceDetails = () => {
       setLikesCount(place.likes?.length || 0)
       // Check if current user has liked this place
       if (isAuthenticated && user) {
-        const userLiked = place.likes?.some(like => like.user === user._id)
-        setIsLiked(userLiked)
+        const userLiked = place.likes?.some(like => like && like.user === user._id)
+        setIsLiked(userLiked || false)
+      } else {
+        setIsLiked(false)
       }
     }
   }, [place, isAuthenticated, user])
@@ -300,7 +302,7 @@ const PlaceDetails = () => {
           </div>
 
           {/* Map Sidebar */}
-          {place.location && (
+          {place.location && place.location.coordinates?.length === 2 && (
             <div className="place-map-sidebar">
               <div className="map-container">
                 <Map

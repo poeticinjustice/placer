@@ -119,7 +119,7 @@ const Map = ({
 
         {/* Render place markers */}
         {places.map((place) => {
-          if (!place.location?.coordinates) return null
+          if (!place.location?.coordinates || place.location.coordinates.length !== 2) return null
 
           const [lng, lat] = place.location.coordinates
           const isSelected = selectedPlace && selectedPlace._id === place._id

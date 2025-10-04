@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUserProfile } from '../../store/slices/authSlice'
 import { fetchUserPlaces, fetchUserComments } from '../../store/slices/userSlice'
+import { useToast } from '../../components/UI/ToastContainer'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { formatDate } from '../../utils/dateFormatter'
 import { stripHtml } from '../../utils/htmlUtils'
@@ -27,6 +28,7 @@ import './Profile.css'
 const Profile = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const toast = useToast()
   const { user, isLoading: authLoading, error: authError } = useSelector((state) => state.auth)
   const { userPlaces, userComments, isLoading: placesLoading, isLoadingComments, pagination, commentsPagination } = useSelector((state) => state.user)
   const [isEditing, setIsEditing] = useState(false)
@@ -73,17 +75,39 @@ const Profile = () => {
   }
 
   const handleAvatarChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setProfileForm(prev => ({
-        ...prev,
-        avatar: file
-      }))
+    const file = e.target.files?.[0]
+    if (!file) return
 
-      const reader = new FileReader()
-      reader.onload = () => setPreviewUrl(reader.result)
-      reader.readAsDataURL(file)
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file')
+      e.target.value = ''
+      return
     }
+
+    // Validate file size (5MB)
+    const maxSize = 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast.error('Image must be less than 5MB')
+      e.target.value = ''
+      return
+    }
+
+    setProfileForm(prev => ({
+      ...prev,
+      avatar: file
+    }))
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (reader.result) {
+        setPreviewUrl(reader.result)
+      }
+    }
+    reader.onerror = () => {
+      toast.error('Failed to read image file')
+    }
+    reader.readAsDataURL(file)
   }
 
   const handleSave = async () => {
@@ -368,22 +392,26 @@ const Profile = () => {
                     ) : userComments.length > 0 ? (
                       <>
                         <div className="comments-list">
-                          {userComments.map((comment) => (
-                            <Link to={`/place/${comment.place._id}`} key={comment._id} className="comment-card">
-                              {comment.place.photo && (
-                                <div className="comment-place-image">
-                                  <img src={comment.place.photo} alt={comment.place.name} />
+                          {userComments.map((comment) => {
+                            if (!comment.place) return null
+
+                            return (
+                              <Link to={`/place/${comment.place._id}`} key={comment._id} className="comment-card">
+                                {comment.place.photo && (
+                                  <div className="comment-place-image">
+                                    <img src={comment.place.photo} alt={comment.place.name || 'Place'} />
+                                  </div>
+                                )}
+                                <div className="comment-content">
+                                  <div className="comment-header">
+                                    <h4>{comment.place.name || 'Untitled Place'}</h4>
+                                    <span className="comment-date">{formatDate(comment.createdAt)}</span>
+                                  </div>
+                                  <p className="comment-text">{stripHtml(comment.content)}</p>
                                 </div>
-                              )}
-                              <div className="comment-content">
-                                <div className="comment-header">
-                                  <h4>{comment.place.name}</h4>
-                                  <span className="comment-date">{formatDate(comment.createdAt)}</span>
-                                </div>
-                                <p className="comment-text">{stripHtml(comment.content)}</p>
-                              </div>
-                            </Link>
-                          ))}
+                              </Link>
+                            )
+                          })}
                         </div>
 
                         {commentsPagination && commentsPagination.pages > 1 && (

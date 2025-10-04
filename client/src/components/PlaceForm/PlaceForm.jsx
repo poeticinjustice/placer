@@ -85,18 +85,49 @@ const PlaceForm = ({
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files)
-    setImageFiles(files)
+
+    // Validate files
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    const validFiles = []
+
+    for (const file of files) {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast.error(`${file.name} is not an image file`)
+        continue
+      }
+
+      // Check file size
+      if (file.size > maxSize) {
+        toast.error(`${file.name} is too large (max 5MB)`)
+        continue
+      }
+
+      validFiles.push(file)
+    }
+
+    if (validFiles.length === 0) {
+      e.target.value = ''
+      return
+    }
+
+    setImageFiles(validFiles)
 
     // Create previews
-    const previews = files.map(file => {
+    const previews = validFiles.map(file => {
       const reader = new FileReader()
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         reader.onload = (e) => resolve(e.target.result)
+        reader.onerror = () => reject(new Error(`Failed to read ${file.name}`))
         reader.readAsDataURL(file)
       })
     })
 
-    Promise.all(previews).then(setImagePreviews)
+    Promise.all(previews)
+      .then(setImagePreviews)
+      .catch(err => {
+        toast.error('Failed to load image previews')
+      })
   }
 
   const removeImage = (index) => {

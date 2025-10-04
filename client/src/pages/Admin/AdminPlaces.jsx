@@ -142,7 +142,7 @@ const AdminPlaces = () => {
 
                     {place.author && (
                       <div className="place-author">
-                        By {place.author.firstName} {place.author.lastName}
+                        By {place.author.firstName || 'User'} {place.author.lastName || ''}
                       </div>
                     )}
                   </div>

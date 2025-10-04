@@ -322,19 +322,70 @@ const Dashboard = () => {
             placeholder='Search places by name, description, location, or tags...'
             className='main-search'
           />
-          {searchParams.get('tag') && (
-            <div className='active-tag-filter'>
-              Filtering by tag: <strong>#{searchParams.get('tag')}</strong>
-              <button
-                onClick={() => {
-                  const newParams = new URLSearchParams(searchParams);
-                  newParams.delete('tag');
-                  setSearchParams(newParams);
-                }}
-                className='clear-tag-filter'
-              >
-                ✕
-              </button>
+
+          {/* Active Filters Display */}
+          {(searchParams.get('tag') || filters?.tags?.length > 0 || filters?.useDistance) && (
+            <div className='active-filters-container'>
+              {/* Tag from URL */}
+              {searchParams.get('tag') && (
+                <div className='active-filter-chip'>
+                  <span>Tag: <strong>#{searchParams.get('tag')}</strong></span>
+                  <button
+                    onClick={() => {
+                      const newParams = new URLSearchParams(searchParams);
+                      newParams.delete('tag');
+                      setSearchParams(newParams);
+                    }}
+                    className='clear-filter-btn'
+                    title='Remove tag filter'
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
+              {/* Tags from filters */}
+              {filters?.tags && filters.tags.length > 0 && (
+                filters.tags.map(tag => (
+                  <div key={tag} className='active-filter-chip'>
+                    <span>Tag: <strong>#{tag}</strong></span>
+                    <button
+                      onClick={() => {
+                        const newTags = filters.tags.filter(t => t !== tag)
+                        handleFiltersChange({
+                          ...filters,
+                          tags: newTags.length > 0 ? newTags : null
+                        })
+                      }}
+                      className='clear-filter-btn'
+                      title='Remove tag filter'
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))
+              )}
+
+              {/* Distance filter */}
+              {filters?.useDistance && filters?.radius && (
+                <div className='active-filter-chip'>
+                  <span>Within: <strong>{Math.round(filters.radius * 0.621371)} mi</strong></span>
+                  <button
+                    onClick={() => {
+                      handleFiltersChange({
+                        ...filters,
+                        useDistance: false,
+                        userLat: null,
+                        userLng: null
+                      })
+                    }}
+                    className='clear-filter-btn'
+                    title='Remove distance filter'
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

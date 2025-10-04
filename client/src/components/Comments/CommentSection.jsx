@@ -142,7 +142,7 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
             <div key={comment._id} className="comment-item">
               <div className="comment-avatar">
                 {comment.author?.avatar ? (
-                  <img src={comment.author.avatar} alt={comment.author.firstName} />
+                  <img src={comment.author.avatar} alt={comment.author.firstName || 'User'} />
                 ) : (
                   <div className="comment-avatar-placeholder">
                     <UserCircleIcon className="icon" />
@@ -154,7 +154,7 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
                 <div className="comment-header">
                   <div className="comment-author">
                     <span className="author-name">
-                      {comment.isAnonymous ? 'Anonymous' : `${comment.author.firstName} ${comment.author.lastName || ''}`}
+                      {comment.isAnonymous || !comment.author ? 'Anonymous' : `${comment.author.firstName || 'User'} ${comment.author.lastName || ''}`}
                     </span>
                     <span className="comment-date">{formatRelativeTime(comment.createdAt)}</span>
                   </div>

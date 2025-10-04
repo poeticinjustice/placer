@@ -509,8 +509,70 @@
   color: #1e40af;
 }
 
+/* Active Filters Container */
+.active-filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.active-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-blue);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.active-filter-chip span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.active-filter-chip strong {
+  font-weight: 600;
+}
+
+.clear-filter-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.clear-filter-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
 @media (max-width: 768px) {
   .dashboard-search {
     margin: 1rem 16px;
+  }
+
+  .active-filters-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .active-filter-chip {
+    font-size: 13px;
+    padding: 5px 10px;
   }
 }

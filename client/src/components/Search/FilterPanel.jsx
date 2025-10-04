@@ -146,8 +146,8 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
   }
 
   const handleDistancePreset = (preset) => {
-    const radius = distanceUnit === 'mi' ? preset.km : preset.km
-    handleFilterChange('radius', radius)
+    // Backend always expects km, so always use preset.km
+    handleFilterChange('radius', preset.km)
   }
 
   const handleSortChange = (value) => {
