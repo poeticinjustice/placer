@@ -110,7 +110,8 @@ const Dashboard = () => {
 
   const handleFiltersChange = (newFilters) => {
     dispatch(setFilters(newFilters));
-    dispatch(searchPlaces());
+    // Pass the new filters directly to searchPlaces to avoid race condition
+    dispatch(searchPlaces({ filters: newFilters }));
     // Reset to page 1 on filter change
     const newParams = new URLSearchParams(searchParams);
     newParams.set('page', '1');
@@ -385,6 +386,29 @@ const Dashboard = () => {
                     ✕
                   </button>
                 </div>
+              )}
+
+              {/* Clear All Filters Button */}
+              {(searchParams.get('tag') || filters?.tags?.length > 0 || filters?.useDistance) && (
+                <button
+                  onClick={() => {
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.delete('tag');
+                    setSearchParams(newParams);
+                    handleFiltersChange({
+                      ...filters,
+                      tags: null,
+                      useDistance: false,
+                      userLat: null,
+                      userLng: null,
+                      radius: null
+                    })
+                  }}
+                  className='clear-all-tags-btn'
+                  title='Clear all filters'
+                >
+                  Clear All Filters
+                </button>
               )}
             </div>
           )}

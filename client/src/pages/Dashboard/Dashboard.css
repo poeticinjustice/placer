@@ -560,6 +560,25 @@
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+.clear-all-tags-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.clear-all-tags-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
 @media (max-width: 768px) {
   .dashboard-search {
     margin: 1rem 16px;
@@ -574,5 +593,12 @@
   .active-filter-chip {
     font-size: 13px;
     padding: 5px 10px;
+  }
+
+  .clear-all-tags-btn {
+    font-size: 13px;
+    padding: 5px 14px;
+    width: 100%;
+    text-align: center;
   }
 }

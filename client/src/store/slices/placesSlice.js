@@ -12,6 +12,13 @@ const initialState = {
   totalPages: 1,
   currentPage: 1,
   filters: {
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    radius: 16,
+    useDistance: false,
+    userLat: null,
+    userLng: null,
+    tags: null,
     location: '',
     author: '',
     dateRange: null
@@ -93,36 +100,40 @@ export const likePlace = createAsyncThunk(
 // Combined search and filter action
 export const searchPlaces = createAsyncThunk(
   'places/searchPlaces',
-  async (_, { getState, dispatch }) => {
+  async (overrideParams = {}, { getState, dispatch }) => {
     const { places } = getState()
     const { searchQuery, filters } = places
 
+    // Use override params if provided, otherwise use state
+    const effectiveFilters = overrideParams.filters || filters
+    const effectiveSearchQuery = overrideParams.searchQuery !== undefined ? overrideParams.searchQuery : searchQuery
+
     const searchParams = {}
 
-    if (searchQuery && searchQuery.trim()) {
-      searchParams.search = searchQuery.trim()
+    if (effectiveSearchQuery && effectiveSearchQuery.trim()) {
+      searchParams.search = effectiveSearchQuery.trim()
     }
 
     // Location-based filtering with user coordinates
-    if (filters.useDistance && filters.userLat && filters.userLng) {
-      searchParams.lat = filters.userLat
-      searchParams.lng = filters.userLng
-      searchParams.radius = filters.radius || 16 // Default 16km (~10 miles)
+    if (effectiveFilters.useDistance && effectiveFilters.userLat && effectiveFilters.userLng) {
+      searchParams.lat = effectiveFilters.userLat
+      searchParams.lng = effectiveFilters.userLng
+      searchParams.radius = effectiveFilters.radius || 16 // Default 16km (~10 miles)
     }
 
-    if (filters.sortBy) {
-      searchParams.sortBy = filters.sortBy
+    if (effectiveFilters.sortBy) {
+      searchParams.sortBy = effectiveFilters.sortBy
     }
 
-    if (filters.sortOrder) {
-      searchParams.sortOrder = filters.sortOrder
+    if (effectiveFilters.sortOrder) {
+      searchParams.sortOrder = effectiveFilters.sortOrder
     }
 
     // Tag filtering
-    if (filters.tags && filters.tags.length > 0) {
+    if (effectiveFilters.tags && effectiveFilters.tags.length > 0) {
       // Backend currently supports single tag, so we'll use the first one
       // If you want to support multiple tags, you'll need to update the backend
-      searchParams.tag = filters.tags[0]
+      searchParams.tag = effectiveFilters.tags[0]
     }
 
     return dispatch(fetchPlaces(searchParams))

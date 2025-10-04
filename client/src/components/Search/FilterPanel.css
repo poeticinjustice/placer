@@ -416,12 +416,17 @@
   text-align: left;
 }
 
-.tag-dropdown-item:hover {
+.tag-dropdown-item:hover,
+.tag-dropdown-item.highlighted {
   background: var(--background-secondary);
 }
 
 .tag-dropdown-item:active {
   background: var(--background-tertiary);
+}
+
+.tag-dropdown-item.highlighted {
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .tag-name {

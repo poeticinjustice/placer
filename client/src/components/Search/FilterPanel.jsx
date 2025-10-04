@@ -13,7 +13,8 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
   const [availableTags, setAvailableTags] = useState([])
   const [tagSearchQuery, setTagSearchQuery] = useState('')
   const [showTagDropdown, setShowTagDropdown] = useState(false)
-  const [selectedTags, setSelectedTags] = useState([])
+  const [selectedTags, setSelectedTags] = useState(filters?.tags || [])
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const tagInputRef = useRef(null)
   const dropdownRef = useRef(null)
 
@@ -31,6 +32,28 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
     { mi: 50, km: 80 },
     { mi: 100, km: 161 }
   ]
+
+  // Sync selectedTags with filters.tags when filters change
+  useEffect(() => {
+    setSelectedTags(filters?.tags || [])
+  }, [filters?.tags])
+
+  // Sync userLocation state when filters change
+  useEffect(() => {
+    if (filters?.useDistance && filters?.userLat && filters?.userLng) {
+      setUserLocation({
+        latitude: filters.userLat,
+        longitude: filters.userLng
+      })
+    } else {
+      setUserLocation(null)
+    }
+  }, [filters?.useDistance, filters?.userLat, filters?.userLng])
+
+  // Sync localFilters when filters prop changes
+  useEffect(() => {
+    setLocalFilters(filters)
+  }, [filters])
 
   // Fetch available tags on mount
   useEffect(() => {
@@ -59,6 +82,16 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Scroll highlighted item into view
+  useEffect(() => {
+    if (highlightedIndex >= 0 && dropdownRef.current) {
+      const highlightedElement = dropdownRef.current.querySelector(`#tag-option-${highlightedIndex}`)
+      if (highlightedElement) {
+        highlightedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      }
+    }
+  }, [highlightedIndex])
+
   // Filter tags based on search query
   const filteredTags = availableTags.filter(({ tag }) => {
     const matchesSearch = tagSearchQuery === '' || tag.toLowerCase().includes(tagSearchQuery.toLowerCase())
@@ -78,9 +111,14 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
     try {
       const location = await geolocationService.getCurrentPosition()
       setUserLocation(location)
-      handleFilterChange('userLat', location.latitude)
-      handleFilterChange('userLng', location.longitude)
-      handleFilterChange('useDistance', true)
+      const newFilters = {
+        ...localFilters,
+        userLat: location.latitude,
+        userLng: location.longitude,
+        useDistance: true
+      }
+      setLocalFilters(newFilters)
+      onFiltersChange(newFilters)
     } catch (error) {
       setLocationError(error.message)
     } finally {
@@ -90,10 +128,16 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
 
   const handleClearLocation = () => {
     setUserLocation(null)
-    handleFilterChange('userLat', null)
-    handleFilterChange('userLng', null)
-    handleFilterChange('useDistance', false)
     setLocationError(null)
+    const newFilters = {
+      ...localFilters,
+      userLat: null,
+      userLng: null,
+      useDistance: false,
+      radius: 16
+    }
+    setLocalFilters(newFilters)
+    onFiltersChange(newFilters)
   }
 
   const handleAddTag = (tag) => {
@@ -113,10 +157,41 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
   const handleTagInputChange = (e) => {
     setTagSearchQuery(e.target.value)
     setShowTagDropdown(true)
+    setHighlightedIndex(-1) // Reset highlight when typing
   }
 
   const handleTagInputFocus = () => {
     setShowTagDropdown(true)
+  }
+
+  const handleTagInputKeyDown = (e) => {
+    if (!showTagDropdown || filteredTags.length === 0) return
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setHighlightedIndex((prev) =>
+          prev < filteredTags.length - 1 ? prev + 1 : prev
+        )
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : -1))
+        break
+      case 'Enter':
+        e.preventDefault()
+        if (highlightedIndex >= 0 && highlightedIndex < filteredTags.length) {
+          handleAddTag(filteredTags[highlightedIndex].tag)
+        }
+        break
+      case 'Escape':
+        e.preventDefault()
+        setShowTagDropdown(false)
+        setHighlightedIndex(-1)
+        break
+      default:
+        break
+    }
   }
 
   const handleReset = () => {
@@ -180,19 +255,28 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
                   value={tagSearchQuery}
                   onChange={handleTagInputChange}
                   onFocus={handleTagInputFocus}
+                  onKeyDown={handleTagInputKeyDown}
                   placeholder="Search tags..."
                   className="tag-search-input"
                   aria-label="Search for tags to filter by"
+                  aria-autocomplete="list"
+                  aria-controls="tag-dropdown"
+                  aria-activedescendant={
+                    highlightedIndex >= 0 ? `tag-option-${highlightedIndex}` : undefined
+                  }
                 />
               </div>
 
               {showTagDropdown && filteredTags.length > 0 && (
-                <div className="tag-dropdown" ref={dropdownRef}>
-                  {filteredTags.slice(0, 10).map(({ tag, count }) => (
+                <div className="tag-dropdown" ref={dropdownRef} id="tag-dropdown" role="listbox">
+                  {filteredTags.slice(0, 10).map(({ tag, count }, index) => (
                     <button
                       key={tag}
+                      id={`tag-option-${index}`}
                       onClick={() => handleAddTag(tag)}
-                      className="tag-dropdown-item"
+                      className={`tag-dropdown-item ${index === highlightedIndex ? 'highlighted' : ''}`}
+                      role="option"
+                      aria-selected={index === highlightedIndex}
                     >
                       <span className="tag-name">#{tag}</span>
                       <span className="tag-count">{count}</span>
