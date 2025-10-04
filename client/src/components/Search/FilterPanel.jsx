@@ -39,7 +39,7 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
         const response = await fetch(`${API_URL}/api/places/tags`)
         const data = await response.json()
         setAvailableTags(data.tags || [])
-      } catch (error) {
+      } catch {
         // Tags are optional - fail silently if fetch errors
         // User can still use filters without tag suggestions
       }

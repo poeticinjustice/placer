@@ -58,8 +58,8 @@ const LocationMarker = ({ showUserLocation, onLocationFound }) => {
             onLocationFound?.(pos)
           }
         })
-        .catch((error) => {
-          // Error handling if needed
+        .catch(() => {
+          // Geolocation error - silently fail as location is optional
         })
         .finally(() => {
           if (isMounted) {

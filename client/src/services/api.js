@@ -30,7 +30,7 @@ apiClient.interceptors.request.use(
       try {
         const authData = JSON.parse(persistedAuth)
         token = authData.token
-      } catch (e) {
+      } catch {
         // Silent fail - corrupted auth data, will be cleared
         localStorage.removeItem('auth')
       }

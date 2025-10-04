@@ -115,7 +115,7 @@ const Profile = () => {
       await dispatch(updateUserProfile(profileForm)).unwrap()
       setIsEditing(false)
       setPreviewUrl(null)
-    } catch (error) {
+    } catch {
       // Error is handled by Redux and shown in UI
     }
   }

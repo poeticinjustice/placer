@@ -48,7 +48,7 @@ const CreatePlace = () => {
     try {
       const result = await dispatch(createPlace(submitData)).unwrap()
       navigate(`/place/${result.place._id}`)
-    } catch (error) {
+    } catch {
       // Error is handled by Redux thunk and displayed via PlaceForm error prop
       // No additional error handling needed here
     }

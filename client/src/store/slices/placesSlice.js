@@ -205,7 +205,7 @@ const placesSlice = createSlice({
         }
       })
       .addCase(likePlace.fulfilled, (state, action) => {
-        const { placeId, isLiked, likesCount } = action.payload
+        const { placeId, likesCount } = action.payload
         // Update in places list
         const placeIndex = state.places.findIndex(p => p._id === placeId)
         if (placeIndex !== -1) {

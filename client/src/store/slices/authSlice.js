@@ -10,7 +10,7 @@ const loadAuthState = () => {
       const { token, user } = JSON.parse(persistedAuth)
       return { token, user, isAuthenticated: !!token, isLoading: !!token }
     }
-  } catch (e) {
+  } catch {
     // Clear corrupted auth data
     localStorage.removeItem('auth')
   }
@@ -60,7 +60,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
   localStorage.removeItem('auth')
   try {
     await api.auth.logout()
-  } catch (error) {
+  } catch {
     // Silent fail on logout - user is already logging out
   }
   return null

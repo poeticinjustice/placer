@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import DOMPurify from 'dompurify'
@@ -69,7 +69,7 @@ const PlaceDetails = () => {
       const result = await dispatch(likePlace(id)).unwrap()
       setIsLiked(result.isLiked)
       setLikesCount(result.likesCount)
-    } catch (err) {
+    } catch {
       toast.error('Failed to like place')
     }
   }
@@ -106,7 +106,7 @@ const PlaceDetails = () => {
       await dispatch(deletePlace(id)).unwrap()
       toast.success('Place deleted successfully')
       navigate('/dashboard')
-    } catch (err) {
+    } catch {
       toast.error('Failed to delete place')
     } finally {
       setIsDeleting(false)

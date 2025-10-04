@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../../services/api'
@@ -57,7 +57,7 @@ const EditPlace = () => {
           isFeatured: fetchedPlace.isFeatured || false
         })
         setExistingPhotos(fetchedPlace.photos || [])
-      } catch (err) {
+      } catch {
         if (isMounted) {
           toast.error('Failed to load place')
           navigate('/dashboard')
@@ -112,7 +112,8 @@ const EditPlace = () => {
     try {
       const result = await dispatch(updatePlace({ placeId: id, placeData: submitData })).unwrap()
       navigate(`/place/${result.place._id}`)
-    } catch (error) {
+    } catch {
+      // Error is handled by Redux thunk and displayed via PlaceForm error prop
     }
   }
 

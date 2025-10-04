@@ -29,7 +29,8 @@ const TagAutocomplete = ({ value, onChange, placeholder = 'Search tags...', help
         const response = await fetch(`${API_URL}/api/places/tags`)
         const data = await response.json()
         setAvailableTags(data.tags || [])
-      } catch (error) {
+      } catch {
+        // Tags are optional - fail silently if fetch errors
       }
     }
     fetchTags()

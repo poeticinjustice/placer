@@ -56,7 +56,8 @@ const LocationPicker = ({
         address: addressInfo.displayName,
         coordinates: [latlng.lng, latlng.lat] // GeoJSON format
       })
-    } catch (error) {
+    } catch {
+      // Reverse geocode failed, still set location with coordinates only
       onLocationChange({
         ...location,
         coordinates: [latlng.lng, latlng.lat]
@@ -72,7 +73,8 @@ const LocationPicker = ({
     try {
       const results = await geolocationService.forwardGeocode(searchQuery)
       setSearchResults(results.slice(0, 5)) // Limit to 5 results
-    } catch (error) {
+    } catch {
+      // Search failed - clear results
       setSearchResults([])
     }
     setIsSearching(false)
@@ -115,7 +117,8 @@ const LocationPicker = ({
           address: addressInfo.displayName,
           coordinates: [position.longitude, position.latitude]
         })
-      } catch (error) {
+      } catch {
+        // Reverse geocode failed, still set location with coordinates only
         onLocationChange({
           ...location,
           coordinates: [position.longitude, position.latitude]

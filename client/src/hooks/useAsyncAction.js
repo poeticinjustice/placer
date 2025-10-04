@@ -14,7 +14,7 @@
  *       },
  *       successMessage: 'Action completed!',
  *       errorMessage: 'Action failed',
- *       onSuccess: (result) => { /* handle result */ }
+ *       onSuccess: (result) => { // handle result }
  *     })
  *   }
  */

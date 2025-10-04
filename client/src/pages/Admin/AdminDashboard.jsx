@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useSelector } from 'react-redux'
 import { Link, useSearchParams } from 'react-router-dom'
 import { api } from '../../services/api'
 import { useConfirm } from '../../components/UI/ConfirmDialogProvider'
