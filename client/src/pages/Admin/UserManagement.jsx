@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
 import {
   UserIcon,
   CheckCircleIcon,
@@ -15,52 +14,35 @@ import {
 } from '@heroicons/react/24/outline'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { formatDateTime } from '../../utils/dateFormatter'
-import { API_URL } from '../../config/api'
+import { useConfirm } from '../../components/UI/ConfirmDialogProvider'
+import { useToast } from '../../components/UI/ToastContainer'
+import {
+  fetchAllUsers,
+  approveUser,
+  rejectUser,
+  toggleAdminStatus
+} from '../../store/slices/adminSlice'
 import './UserManagement.css'
 
 const UserManagement = () => {
-  const { token, user: currentUser } = useSelector((state) => state.auth)
-  const [users, setUsers] = useState([])
+  const dispatch = useDispatch()
+  const confirm = useConfirm()
+  const toast = useToast()
+
+  const { user: currentUser } = useSelector((state) => state.auth)
+  const { allUsers, isLoadingUsers, usersError } = useSelector((state) => state.admin)
+
   const [filteredUsers, setFilteredUsers] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [processingUserId, setProcessingUserId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('all') // 'all', 'approved', 'pending'
+  const [processingUserId, setProcessingUserId] = useState(null)
 
-  const fetchAllUsers = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-
-      // Fetch both pending and all users
-      const [pendingRes, approvedRes] = await Promise.all([
-        axios.get(`${API_URL}/api/users/admin/pending`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${API_URL}/api/users/admin/all`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ])
-
-      // Combine and deduplicate users
-      const allUsers = [...pendingRes.data.users, ...approvedRes.data.users]
-      const uniqueUsers = allUsers.filter((user, index, self) =>
-        index === self.findIndex(u => u._id === user._id)
-      )
-
-      setUsers(uniqueUsers)
-      setFilteredUsers(uniqueUsers)
-    } catch (err) {
-      console.error('Error fetching users:', err)
-      setError(err.response?.data?.message || 'Failed to fetch users')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [token])
+  useEffect(() => {
+    dispatch(fetchAllUsers())
+  }, [dispatch])
 
   const filterUsers = useCallback(() => {
-    let filtered = [...users]
+    let filtered = [...allUsers]
 
     // Apply status filter
     if (filterStatus === 'approved') {
@@ -81,92 +63,69 @@ const UserManagement = () => {
     }
 
     setFilteredUsers(filtered)
-  }, [users, searchQuery, filterStatus])
-
-  useEffect(() => {
-    fetchAllUsers()
-  }, [fetchAllUsers])
+  }, [allUsers, searchQuery, filterStatus])
 
   useEffect(() => {
     filterUsers()
   }, [filterUsers])
 
   const handleApprove = async (userId) => {
-    if (!window.confirm('Approve this user?')) return
+    const confirmed = await confirm('Approve this user?')
+    if (!confirmed) return
 
     try {
       setProcessingUserId(userId)
-      await axios.put(
-        `${API_URL}/api/users/admin/approve/${userId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-
-      setUsers(users.map(user =>
-        user._id === userId ? { ...user, isApproved: true } : user
-      ))
+      await dispatch(approveUser(userId)).unwrap()
+      toast.success('User approved successfully')
     } catch (err) {
-      console.error('Error approving user:', err)
-      alert(err.response?.data?.message || 'Failed to approve user')
+      toast.error(err || 'Failed to approve user')
     } finally {
       setProcessingUserId(null)
     }
   }
 
   const handleDelete = async (userId, userName) => {
-    if (!window.confirm(`Permanently DELETE user "${userName}"? This action cannot be undone and will delete all their places.`)) {
-      return
-    }
+    const confirmed = await confirm(
+      `Permanently DELETE user "${userName}"?`,
+      'This action cannot be undone and will delete all their places.'
+    )
+    if (!confirmed) return
 
     try {
       setProcessingUserId(userId)
-      await axios.delete(
-        `${API_URL}/api/users/admin/reject/${userId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-
-      setUsers(users.filter(user => user._id !== userId))
+      await dispatch(rejectUser(userId)).unwrap()
+      toast.success('User deleted successfully')
     } catch (err) {
-      console.error('Error deleting user:', err)
-      alert(err.response?.data?.message || 'Failed to delete user')
+      toast.error(err || 'Failed to delete user')
     } finally {
       setProcessingUserId(null)
     }
   }
 
   const handleToggleAdmin = async (userId, userName, currentRole) => {
-    const action = currentRole === 'admin' ? 'remove admin privileges from' : 'make admin'
-    if (!window.confirm(`${action === 'make admin' ? 'Make' : 'Remove admin privileges from'} "${userName}"?`)) {
-      return
-    }
+    const action = currentRole === 'admin' ? 'Remove admin privileges from' : 'Make'
+    const confirmed = await confirm(`${action} "${userName}"?`)
+    if (!confirmed) return
 
     try {
       setProcessingUserId(userId)
-      const response = await axios.put(
-        `${API_URL}/api/users/admin/toggle-admin/${userId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-
-      setUsers(users.map(user =>
-        user._id === userId ? response.data.user : user
-      ))
+      await dispatch(toggleAdminStatus(userId)).unwrap()
+      toast.success(currentRole === 'admin' ? 'Admin privileges removed' : 'User promoted to admin')
     } catch (err) {
-      console.error('Error toggling admin:', err)
-      alert(err.response?.data?.message || 'Failed to update user role')
+      toast.error(err || 'Failed to update user role')
     } finally {
       setProcessingUserId(null)
     }
   }
 
-  if (isLoading) {
+  if (isLoadingUsers) {
     return <LoadingSpinner />
   }
 
   const stats = {
-    total: users.length,
-    approved: users.filter(u => u.isApproved).length,
-    pending: users.filter(u => !u.isApproved).length
+    total: allUsers.length,
+    approved: allUsers.filter(u => u.isApproved).length,
+    pending: allUsers.filter(u => !u.isApproved).length
   }
 
   return (
@@ -182,10 +141,10 @@ const UserManagement = () => {
           </Link>
         </div>
 
-        {error && (
+        {usersError && (
           <div className="error-message">
             <ExclamationTriangleIcon className="icon" />
-            {error}
+            {usersError}
           </div>
         )}
 

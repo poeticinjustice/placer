@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import axios from 'axios'
 import {
   ChatBubbleLeftIcon,
   TrashIcon,
@@ -8,17 +7,22 @@ import {
 } from '@heroicons/react/24/outline'
 import LoadingSpinner from '../UI/LoadingSpinner'
 import { formatRelativeTime } from '../../utils/dateFormatter'
-import { API_URL } from '../../config/api'
+import { api } from '../../services/api'
+import { handleApiError } from '../../utils/apiErrorHandler'
+import { useConfirm } from '../UI/ConfirmDialogProvider'
+import { useToast } from '../UI/ToastContainer'
 import TiptapEditor from '../Editor/TiptapEditor'
 import './CommentSection.css'
 
 const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onCommentDeleted }) => {
-  const { user, token, isAuthenticated } = useSelector((state) => state.auth)
+  const { user, isAuthenticated } = useSelector((state) => state.auth)
+  const confirm = useConfirm()
+  const toast = useToast()
+
   const [comments, setComments] = useState(initialComments)
   const [newComment, setNewComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
-  const [error, setError] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -27,16 +31,8 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
 
     try {
       setIsSubmitting(true)
-      setError(null)
 
-      const response = await axios.post(
-        `${API_URL}/api/places/${placeId}/comments`,
-        { content: newComment },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
-
+      const response = await api.places.addComment(placeId, { content: newComment })
       const addedComment = response.data.comment
       setComments([...comments, addedComment])
       setNewComment('')
@@ -44,38 +40,32 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
       if (onCommentAdded) {
         onCommentAdded(addedComment)
       }
+
+      toast.success('Comment posted successfully')
     } catch (err) {
-      console.error('Error adding comment:', err)
-      setError(err.response?.data?.message || 'Failed to add comment')
+      toast.error(handleApiError(err, 'Failed to add comment'))
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const handleDelete = async (commentId) => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) {
-      return
-    }
+    const confirmed = await confirm('Delete this comment?')
+    if (!confirmed) return
 
     try {
       setDeletingId(commentId)
-      setError(null)
 
-      await axios.delete(
-        `${API_URL}/api/places/${placeId}/comments/${commentId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
-
+      await api.places.deleteComment(placeId, commentId)
       setComments(comments.filter(c => c._id !== commentId))
 
       if (onCommentDeleted) {
         onCommentDeleted(commentId)
       }
+
+      toast.success('Comment deleted')
     } catch (err) {
-      console.error('Error deleting comment:', err)
-      setError(err.response?.data?.message || 'Failed to delete comment')
+      toast.error(handleApiError(err, 'Failed to delete comment'))
     } finally {
       setDeletingId(null)
     }
@@ -103,12 +93,6 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
           Comments ({comments.length})
         </h3>
       </div>
-
-      {error && (
-        <div className="comment-error">
-          {error}
-        </div>
-      )}
 
       {/* Comment Form */}
       {isAuthenticated ? (

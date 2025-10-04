@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import axios from 'axios'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   MapPinIcon,
   CalendarDaysIcon,
@@ -17,19 +16,24 @@ import CommentSection from '../../components/Comments/CommentSection'
 import Map from '../../components/Map/Map'
 import ImageLightbox from '../../components/UI/ImageLightbox'
 import { formatDate } from '../../utils/dateFormatter'
-import { API_URL } from '../../config/api'
+import { useConfirm } from '../../components/UI/ConfirmDialogProvider'
+import { useToast } from '../../components/UI/ToastContainer'
+import { fetchPlaceById, deletePlace, likePlace } from '../../store/slices/placesSlice'
 import usePageTitle from '../../hooks/usePageTitle'
 import './PlaceDetails.css'
 
 const PlaceDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { token, user, isAuthenticated } = useSelector((state) => state.auth)
-  const [place, setPlace] = useState(null)
+  const dispatch = useDispatch()
+  const confirm = useConfirm()
+  const toast = useToast()
+
+  const { user, isAuthenticated } = useSelector((state) => state.auth)
+  const { currentPlace: place, isLoading, error } = useSelector((state) => state.places)
 
   usePageTitle(place?.name || 'Place Details')
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
+
   const [isLiked, setIsLiked] = useState(false)
   const [likesCount, setLikesCount] = useState(0)
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
@@ -37,30 +41,20 @@ const PlaceDetails = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
 
-  const fetchPlace = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      const response = await axios.get(`${API_URL}/api/places/${id}`)
-      const fetchedPlace = response.data.place
-      setPlace(fetchedPlace)
-      setLikesCount(fetchedPlace.likes?.length || 0)
-
-      // Check if current user has liked this place
-      if (isAuthenticated && user) {
-        const userLiked = fetchedPlace.likes?.some(like => like.user === user._id)
-        setIsLiked(userLiked)
-      }
-    } catch (err) {
-      console.error('Error fetching place:', err)
-      setError(err.response?.data?.message || 'Failed to load place')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [id, isAuthenticated, user])
+  useEffect(() => {
+    dispatch(fetchPlaceById(id))
+  }, [dispatch, id])
 
   useEffect(() => {
-    fetchPlace()
-  }, [fetchPlace])
+    if (place) {
+      setLikesCount(place.likes?.length || 0)
+      // Check if current user has liked this place
+      if (isAuthenticated && user) {
+        const userLiked = place.likes?.some(like => like.user === user._id)
+        setIsLiked(userLiked)
+      }
+    }
+  }, [place, isAuthenticated, user])
 
   const handleLike = async () => {
     if (!isAuthenticated) {
@@ -69,17 +63,11 @@ const PlaceDetails = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${API_URL}/api/places/${id}/like`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
-      setIsLiked(response.data.isLiked)
-      setLikesCount(response.data.likesCount)
+      const result = await dispatch(likePlace(id)).unwrap()
+      setIsLiked(result.isLiked)
+      setLikesCount(result.likesCount)
     } catch (err) {
-      console.error('Error liking place:', err)
+      toast.error('Failed to like place')
     }
   }
 
@@ -104,19 +92,19 @@ const PlaceDetails = () => {
   }
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this place? This action cannot be undone.')) {
-      return
-    }
+    const confirmed = await confirm(
+      'Delete this place?',
+      'This action cannot be undone and will remove all associated data.'
+    )
+    if (!confirmed) return
 
     try {
       setIsDeleting(true)
-      await axios.delete(`${API_URL}/api/places/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      await dispatch(deletePlace(id)).unwrap()
+      toast.success('Place deleted successfully')
       navigate('/dashboard')
     } catch (err) {
-      console.error('Error deleting place:', err)
-      alert(err.response?.data?.message || 'Failed to delete place')
+      toast.error('Failed to delete place')
     } finally {
       setIsDeleting(false)
     }

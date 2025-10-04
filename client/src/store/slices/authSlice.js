@@ -1,24 +1,40 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { API_URL } from '../../config/api'
+import { api } from '../../services/api'
+import { handleApiError } from '../../utils/apiErrorHandler'
+
+// Load auth state from localStorage
+const loadAuthState = () => {
+  try {
+    const persistedAuth = localStorage.getItem('auth')
+    if (persistedAuth) {
+      const { token, user } = JSON.parse(persistedAuth)
+      return { token, user, isAuthenticated: !!token, isLoading: !!token }
+    }
+  } catch (e) {
+    console.error('Error loading auth state:', e)
+    localStorage.removeItem('auth')
+  }
+  return { token: null, user: null, isAuthenticated: false, isLoading: false }
+}
 
 const initialState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  isLoading: !!localStorage.getItem('token'), // Loading if token exists
+  ...loadAuthState(),
   error: null,
-  isAuthenticated: !!localStorage.getItem('token'), // Assume authenticated if token exists
 }
 
 export const signup = createAsyncThunk(
   'auth/signup',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/api/auth/signup`, userData)
-      localStorage.setItem('token', response.data.token)
+      const response = await api.auth.signup(userData)
+      // Persist auth state
+      localStorage.setItem('auth', JSON.stringify({
+        token: response.data.token,
+        user: response.data.user
+      }))
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response.data.message)
+      return rejectWithValue(handleApiError(error, 'Signup failed'))
     }
   }
 )
@@ -27,17 +43,26 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, credentials)
-      localStorage.setItem('token', response.data.token)
+      const response = await api.auth.login(credentials)
+      // Persist auth state
+      localStorage.setItem('auth', JSON.stringify({
+        token: response.data.token,
+        user: response.data.user
+      }))
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response.data.message)
+      return rejectWithValue(handleApiError(error, 'Login failed'))
     }
   }
 )
 
 export const logout = createAsyncThunk('auth/logout', async () => {
-  localStorage.removeItem('token')
+  localStorage.removeItem('auth')
+  try {
+    await api.auth.logout()
+  } catch (error) {
+    console.error('Logout error:', error)
+  }
   return null
 })
 
@@ -48,13 +73,11 @@ export const getCurrentUser = createAsyncThunk(
       const token = getState().auth.token
       if (!token) return rejectWithValue('No token found')
 
-      const response = await axios.get(`${API_URL}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.auth.getCurrentUser()
       return response.data
     } catch (error) {
-      localStorage.removeItem('token')
-      return rejectWithValue(error.response.data.message)
+      localStorage.removeItem('auth')
+      return rejectWithValue(handleApiError(error, 'Failed to get user'))
     }
   }
 )
@@ -73,15 +96,10 @@ export const updateUserProfile = createAsyncThunk(
         }
       })
 
-      const response = await axios.put(`${API_URL}/api/users/profile`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      const response = await api.users.updateProfile(formData)
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Update failed')
+      return rejectWithValue(handleApiError(error, 'Update failed'))
     }
   }
 )

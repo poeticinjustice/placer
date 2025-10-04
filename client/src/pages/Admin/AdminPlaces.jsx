@@ -1,7 +1,6 @@
-import { useEffect, useState, useCallback } from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
 import {
   StarIcon,
   MapPinIcon,
@@ -13,71 +12,38 @@ import {
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { formatDateShort } from '../../utils/dateFormatter'
-import { API_URL } from '../../config/api'
+import { useToast } from '../../components/UI/ToastContainer'
+import {
+  fetchAdminPlaces,
+  toggleFeaturedStatus,
+  setPlacesPagination
+} from '../../store/slices/adminSlice'
 import './AdminPlaces.css'
 
 const AdminPlaces = () => {
-  const { token } = useSelector((state) => state.auth)
-  const [places, setPlaces] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [processingPlaceId, setProcessingPlaceId] = useState(null)
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 20,
-    total: 0,
-    pages: 0
-  })
+  const dispatch = useDispatch()
+  const toast = useToast()
 
-  const fetchPlaces = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-      const response = await axios.get(
-        `${API_URL}/api/places?page=${pagination.page}&limit=${pagination.limit}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
-      setPlaces(response.data.places)
-      setPagination(response.data.pagination)
-    } catch (err) {
-      console.error('Error fetching places:', err)
-      setError(err.response?.data?.message || 'Failed to fetch places')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [pagination.page, pagination.limit, token])
+  const { places, isLoadingPlaces, placesError, placesPagination } = useSelector((state) => state.admin)
 
   useEffect(() => {
-    fetchPlaces()
-  }, [fetchPlaces])
+    dispatch(fetchAdminPlaces({ page: placesPagination.page, limit: placesPagination.limit }))
+  }, [dispatch, placesPagination.page, placesPagination.limit])
 
   const handleToggleFeatured = async (placeId) => {
     try {
-      setProcessingPlaceId(placeId)
-      const response = await axios.patch(
-        `${API_URL}/api/places/${placeId}/featured`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
-
-      setPlaces(places.map(place =>
-        place._id === placeId
-          ? { ...place, isFeatured: response.data.isFeatured }
-          : place
-      ))
+      await dispatch(toggleFeaturedStatus(placeId)).unwrap()
+      toast.success('Featured status updated')
     } catch (err) {
-      console.error('Error toggling featured status:', err)
-      alert(err.response?.data?.message || 'Failed to update featured status')
-    } finally {
-      setProcessingPlaceId(null)
+      toast.error(err || 'Failed to update featured status')
     }
   }
 
-  if (isLoading && places.length === 0) {
+  const handlePageChange = (newPage) => {
+    dispatch(setPlacesPagination({ page: newPage }))
+  }
+
+  if (isLoadingPlaces && places.length === 0) {
     return <LoadingSpinner />
   }
 
@@ -95,10 +61,10 @@ const AdminPlaces = () => {
           </div>
         </div>
 
-        {error && (
+        {placesError && (
           <div className="error-message">
             <ExclamationTriangleIcon className="icon" />
-            {error}
+            {placesError}
           </div>
         )}
 
@@ -108,7 +74,7 @@ const AdminPlaces = () => {
             <div className="stat-label">Featured Places</div>
           </div>
           <div className="stat-card">
-            <div className="stat-number">{pagination.total}</div>
+            <div className="stat-number">{placesPagination.total}</div>
             <div className="stat-label">Total Places</div>
           </div>
         </div>
@@ -135,12 +101,10 @@ const AdminPlaces = () => {
                     <button
                       onClick={() => handleToggleFeatured(place._id)}
                       className={`featured-toggle ${place.isFeatured ? 'active' : ''}`}
-                      disabled={processingPlaceId === place._id}
+                      disabled={isLoadingPlaces}
                       title={place.isFeatured ? 'Remove from featured' : 'Add to featured'}
                     >
-                      {processingPlaceId === place._id ? (
-                        <LoadingSpinner size="small" />
-                      ) : place.isFeatured ? (
+                      {place.isFeatured ? (
                         <StarIconSolid className="icon" />
                       ) : (
                         <StarIcon className="icon" />
@@ -186,23 +150,23 @@ const AdminPlaces = () => {
               ))}
             </div>
 
-            {pagination.pages > 1 && (
+            {placesPagination.pages > 1 && (
               <div className="pagination">
                 <button
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
-                  disabled={pagination.page === 1}
+                  onClick={() => handlePageChange(placesPagination.page - 1)}
+                  disabled={placesPagination.page === 1}
                   className="btn btn-secondary"
                 >
                   Previous
                 </button>
 
                 <span className="pagination-info">
-                  Page {pagination.page} of {pagination.pages}
+                  Page {placesPagination.page} of {placesPagination.pages}
                 </span>
 
                 <button
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
-                  disabled={pagination.page === pagination.pages}
+                  onClick={() => handlePageChange(placesPagination.page + 1)}
+                  disabled={placesPagination.page === placesPagination.pages}
                   className="btn btn-secondary"
                 >
                   Next

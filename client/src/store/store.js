@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice'
 import placesReducer from './slices/placesSlice'
 import uiReducer from './slices/uiSlice'
 import userReducer from './slices/userSlice'
+import adminReducer from './slices/adminSlice'
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     places: placesReducer,
     ui: uiReducer,
     user: userReducer,
+    admin: adminReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

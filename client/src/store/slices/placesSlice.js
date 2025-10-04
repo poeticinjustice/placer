@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { API_URL } from '../../config/api'
+import { api } from '../../services/api'
+import { handleApiError } from '../../utils/apiErrorHandler'
 
 const initialState = {
   places: [],
@@ -22,11 +22,10 @@ export const fetchPlaces = createAsyncThunk(
   'places/fetchPlaces',
   async (params = {}, { rejectWithValue }) => {
     try {
-      const queryString = new URLSearchParams(params).toString()
-      const response = await axios.get(`${API_URL}/api/places?${queryString}`)
+      const response = await api.places.list(params)
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response.data.message)
+      return rejectWithValue(handleApiError(error, 'Failed to fetch places'))
     }
   }
 )
@@ -35,61 +34,58 @@ export const fetchPlaceById = createAsyncThunk(
   'places/fetchPlaceById',
   async (placeId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/api/places/${placeId}`)
+      const response = await api.places.get(placeId)
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response.data.message)
+      return rejectWithValue(handleApiError(error, 'Failed to fetch place'))
     }
   }
 )
 
 export const createPlace = createAsyncThunk(
   'places/createPlace',
-  async (placeData, { rejectWithValue, getState }) => {
+  async (placeData, { rejectWithValue }) => {
     try {
-      const token = getState().auth.token
-      const response = await axios.post(`${API_URL}/api/places`, placeData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      const response = await api.places.create(placeData)
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response.data.message)
+      return rejectWithValue(handleApiError(error, 'Failed to create place'))
     }
   }
 )
 
 export const updatePlace = createAsyncThunk(
   'places/updatePlace',
-  async ({ placeId, placeData }, { rejectWithValue, getState }) => {
+  async ({ placeId, placeData }, { rejectWithValue }) => {
     try {
-      const token = getState().auth.token
-      const response = await axios.put(`${API_URL}/api/places/${placeId}`, placeData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      const response = await api.places.update(placeId, placeData)
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response.data.message)
+      return rejectWithValue(handleApiError(error, 'Failed to update place'))
     }
   }
 )
 
 export const deletePlace = createAsyncThunk(
   'places/deletePlace',
-  async (placeId, { rejectWithValue, getState }) => {
+  async (placeId, { rejectWithValue }) => {
     try {
-      const token = getState().auth.token
-      await axios.delete(`${API_URL}/api/places/${placeId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      await api.places.delete(placeId)
       return placeId
     } catch (error) {
-      return rejectWithValue(error.response.data.message)
+      return rejectWithValue(handleApiError(error, 'Failed to delete place'))
+    }
+  }
+)
+
+export const likePlace = createAsyncThunk(
+  'places/likePlace',
+  async (placeId, { rejectWithValue }) => {
+    try {
+      const response = await api.places.like(placeId)
+      return { placeId, ...response.data }
+    } catch (error) {
+      return rejectWithValue(handleApiError(error, 'Failed to like place'))
     }
   }
 )
@@ -206,6 +202,18 @@ const placesSlice = createSlice({
         state.places = state.places.filter(place => place._id !== action.payload)
         if (state.currentPlace && state.currentPlace._id === action.payload) {
           state.currentPlace = null
+        }
+      })
+      .addCase(likePlace.fulfilled, (state, action) => {
+        const { placeId, isLiked, likesCount } = action.payload
+        // Update in places list
+        const placeIndex = state.places.findIndex(p => p._id === placeId)
+        if (placeIndex !== -1) {
+          state.places[placeIndex].likes = Array(likesCount).fill(null) // Placeholder for count
+        }
+        // Update current place if it's the one being liked
+        if (state.currentPlace && state.currentPlace._id === placeId) {
+          state.currentPlace.likes = Array(likesCount).fill(null)
         }
       })
   },

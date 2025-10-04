@@ -1,22 +1,22 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import axios from 'axios'
 import { LockClosedIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
-import { API_URL } from '../../config/api'
+import { api } from '../../services/api'
+import { handleApiError } from '../../utils/apiErrorHandler'
+import { useToast } from '../../components/UI/ToastContainer'
 import { FormInput } from '../../components/Form'
 import './ChangePassword.css'
 
 const ChangePassword = () => {
   const navigate = useNavigate()
-  const { token } = useSelector((state) => state.auth)
+  const toast = useToast()
+
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   })
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleChange = (e) => {
@@ -25,13 +25,11 @@ const ChangePassword = () => {
       [e.target.name]: e.target.value
     })
     setError('')
-    setSuccess('')
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setSuccess('')
 
     if (formData.newPassword !== formData.confirmPassword) {
       setError('New passwords do not match')
@@ -45,29 +43,25 @@ const ChangePassword = () => {
 
     try {
       setIsLoading(true)
-      await axios.put(
-        `${API_URL}/api/auth/change-password`,
-        {
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword,
-          confirmPassword: formData.confirmPassword
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
-      setSuccess('Password changed successfully!')
+      await api.auth.changePassword({
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
+        confirmPassword: formData.confirmPassword
+      })
+
+      toast.success('Password changed successfully!')
       setFormData({
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
       })
+
       setTimeout(() => {
         navigate('/profile')
       }, 2000)
     } catch (err) {
-      console.error('Change password error:', err)
-      setError(err.response?.data?.message || 'Failed to change password')
+      const errorMessage = handleApiError(err, 'Failed to change password')
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -91,7 +85,6 @@ const ChangePassword = () => {
           </div>
 
           {error && <div className="error-message">{error}</div>}
-          {success && <div className="success-message">{success}</div>}
 
           <form onSubmit={handleSubmit} className="change-password-form">
             <FormInput

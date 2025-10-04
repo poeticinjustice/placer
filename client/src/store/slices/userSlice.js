@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { API_URL } from '../../config/api'
+import { api } from '../../services/api'
+import { handleApiError } from '../../utils/apiErrorHandler'
 
 const initialState = {
   userPlaces: [],
@@ -20,13 +20,10 @@ export const fetchUserPlaces = createAsyncThunk(
       const token = getState().auth.token
       if (!token) return rejectWithValue('No token found')
 
-      const response = await axios.get(`${API_URL}/api/users/places`, {
-        params: { page, limit, status },
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.users.getPlaces({ page, limit, status })
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch places')
+      return rejectWithValue(handleApiError(error, 'Failed to fetch places'))
     }
   }
 )
@@ -39,13 +36,10 @@ export const fetchUserComments = createAsyncThunk(
       const token = getState().auth.token
       if (!token) return rejectWithValue('No token found')
 
-      const response = await axios.get(`${API_URL}/api/users/comments`, {
-        params: { page, limit },
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.users.getComments({ page, limit })
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch comments')
+      return rejectWithValue(handleApiError(error, 'Failed to fetch comments'))
     }
   }
 )
