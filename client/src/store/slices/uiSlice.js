@@ -1,7 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+// Load theme from localStorage or default to 'light'
+const loadTheme = () => {
+  const savedTheme = localStorage.getItem('theme')
+  return savedTheme || 'light'
+}
+
 const initialState = {
-  theme: 'light',
+  theme: loadTheme(),
   sidebarOpen: false,
   modalOpen: false,
   modalType: null,
@@ -15,6 +21,14 @@ const uiSlice = createSlice({
   reducers: {
     setTheme: (state, action) => {
       state.theme = action.payload
+      localStorage.setItem('theme', action.payload)
+      document.documentElement.setAttribute('data-theme', action.payload)
+    },
+    toggleTheme: (state) => {
+      const newTheme = state.theme === 'light' ? 'dark' : 'light'
+      state.theme = newTheme
+      localStorage.setItem('theme', newTheme)
+      document.documentElement.setAttribute('data-theme', newTheme)
     },
     toggleSidebar: (state) => {
       state.sidebarOpen = !state.sidebarOpen
@@ -44,6 +58,7 @@ const uiSlice = createSlice({
 
 export const {
   setTheme,
+  toggleTheme,
   toggleSidebar,
   setSidebarOpen,
   openModal,

@@ -1,17 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout } from '../../store/slices/authSlice'
-import { Bars3Icon, XMarkIcon, UserCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { toggleTheme } from '../../store/slices/uiSlice'
+import { Bars3Icon, XMarkIcon, UserCircleIcon, ChevronDownIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline'
 import './Header.css'
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const { isAuthenticated, user } = useSelector((state) => state.auth)
+  const { theme } = useSelector((state) => state.ui)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+
+  // Apply theme on mount and when it changes
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+  }, [theme])
 
   const handleLogout = () => {
     dispatch(logout())
@@ -47,6 +54,16 @@ const Header = () => {
             <>
               <Link to="/dashboard" className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}>Dashboard</Link>
               <Link to="/create" className={`nav-link ${isActive('/create') ? 'active' : ''}`}>Add Place</Link>
+
+              {/* Theme Toggle */}
+              <button
+                onClick={() => dispatch(toggleTheme())}
+                className="theme-toggle-btn"
+                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              >
+                {theme === 'light' ? <MoonIcon className="icon" /> : <SunIcon className="icon" />}
+              </button>
+
               <div className="user-menu">
                 <button className="user-menu-trigger">
                   {user?.avatar ? (
@@ -67,7 +84,17 @@ const Header = () => {
               </div>
             </>
           ) : (
-            <Link to="/auth" className="btn btn-primary">Sign In</Link>
+            <>
+              {/* Theme Toggle for non-authenticated users */}
+              <button
+                onClick={() => dispatch(toggleTheme())}
+                className="theme-toggle-btn"
+                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              >
+                {theme === 'light' ? <MoonIcon className="icon" /> : <SunIcon className="icon" />}
+              </button>
+              <Link to="/auth" className="btn btn-primary">Sign In</Link>
+            </>
           )}
         </nav>
 
@@ -125,11 +152,30 @@ const Header = () => {
                   </div>
                 )}
               </div>
+
+              {/* Theme Toggle in Mobile Menu */}
+              <button
+                onClick={() => dispatch(toggleTheme())}
+                className="mobile-nav-link theme-toggle-mobile"
+              >
+                {theme === 'light' ? <MoonIcon className="icon" /> : <SunIcon className="icon" />}
+                <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+              </button>
             </>
           ) : (
-            <Link to="/auth" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              Sign In
-            </Link>
+            <>
+              <Link to="/auth" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                Sign In
+              </Link>
+              {/* Theme Toggle for non-authenticated mobile users */}
+              <button
+                onClick={() => dispatch(toggleTheme())}
+                className="mobile-nav-link theme-toggle-mobile"
+              >
+                {theme === 'light' ? <MoonIcon className="icon" /> : <SunIcon className="icon" />}
+                <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+              </button>
+            </>
           )}
         </div>
       )}

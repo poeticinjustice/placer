@@ -352,6 +352,47 @@
   }
 }
 
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  color: var(--label-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background-color: rgba(0, 122, 255, 0.08);
+  color: var(--primary-blue);
+}
+
+.theme-toggle-btn .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Mobile Theme Toggle */
+.theme-toggle-mobile {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.theme-toggle-mobile .icon {
+  width: 20px;
+  height: 20px;
+}
+
 /* Add safe area support for mobile */
 @supports (padding: max(0px)) {
   .header-container {

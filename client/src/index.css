@@ -55,8 +55,20 @@
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Dark mode - manual toggle */
+[data-theme="dark"] {
+  --background-primary: var(--dark-background-primary);
+  --background-secondary: var(--dark-background-secondary);
+  --background-tertiary: var(--dark-background-tertiary);
+  --label-primary: var(--dark-label-primary);
+  --label-secondary: var(--dark-label-secondary);
+  --label-tertiary: var(--dark-label-tertiary);
+  --separator: var(--dark-separator);
+}
+
+/* Respect system preference by default */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background-primary: var(--dark-background-primary);
     --background-secondary: var(--dark-background-secondary);
     --background-tertiary: var(--dark-background-tertiary);
