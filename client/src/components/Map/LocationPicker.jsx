@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { geolocationService } from '../../services/geolocation'
 import { MapPinIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
+import { useToast } from '../UI/ToastContainer'
 import './LocationPicker.css'
 
 // Custom icon for selected location
@@ -31,6 +32,7 @@ const LocationPicker = ({
   showSearch = true,
   showCurrentLocation = true
 }) => {
+  const toast = useToast()
   const [mapCenter, setMapCenter] = useState([40.7128, -74.0060]) // Default to NYC
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
@@ -120,7 +122,7 @@ const LocationPicker = ({
         })
       }
     } catch (error) {
-      alert(error.message)
+      toast.error(error.message || 'Failed to get your current location')
     }
     setIsGettingLocation(false)
   }
@@ -148,6 +150,7 @@ const LocationPicker = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleSearchKeyPress}
                 className="search-input"
+                aria-label="Search for a location"
               />
               <button
                 onClick={handleSearch}

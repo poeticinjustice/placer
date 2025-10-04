@@ -125,7 +125,8 @@ const PlaceForm = ({
 
     Promise.all(previews)
       .then(setImagePreviews)
-      .catch(err => {
+      .catch(() => {
+        // Error reading one or more image files for preview
         toast.error('Failed to load image previews')
       })
   }

@@ -40,7 +40,8 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
         const data = await response.json()
         setAvailableTags(data.tags || [])
       } catch (error) {
-        // Silent fail - tags are optional
+        // Tags are optional - fail silently if fetch errors
+        // User can still use filters without tag suggestions
       }
     }
     if (isOpen) {
@@ -183,6 +184,7 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
                   onFocus={handleTagInputFocus}
                   placeholder="Search tags..."
                   className="tag-search-input"
+                  aria-label="Search for tags to filter by"
                 />
               </div>
 
