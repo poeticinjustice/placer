@@ -46,19 +46,30 @@ const LocationMarker = ({ showUserLocation, onLocationFound }) => {
   const [_isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
+    let isMounted = true
+
     if (showUserLocation && geolocationService.isSupported()) {
       setIsLoading(true)
       geolocationService.getCurrentPosition()
         .then((location) => {
-          const pos = [location.latitude, location.longitude]
-          setPosition(pos)
-          onLocationFound?.(pos)
+          if (isMounted) {
+            const pos = [location.latitude, location.longitude]
+            setPosition(pos)
+            onLocationFound?.(pos)
+          }
         })
         .catch((error) => {
+          // Error handling if needed
         })
         .finally(() => {
-          setIsLoading(false)
+          if (isMounted) {
+            setIsLoading(false)
+          }
         })
+    }
+
+    return () => {
+      isMounted = false
     }
   }, [showUserLocation, onLocationFound])
 
@@ -132,7 +143,7 @@ const Map = ({
             >
               <Popup>
                 <div className="place-popup">
-                  <h3>{place.title}</h3>
+                  <h3>{place.name}</h3>
                   {place.description && (
                     <p>{stripHtml(place.description).substring(0, 100)}...</p>
                   )}
@@ -142,7 +153,7 @@ const Map = ({
                   {place.photos && place.photos.length > 0 && (
                     <img
                       src={place.photos[0].url}
-                      alt={place.title}
+                      alt={place.name}
                       className="popup-image"
                     />
                   )}

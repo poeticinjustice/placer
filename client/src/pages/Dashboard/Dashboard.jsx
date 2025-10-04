@@ -191,11 +191,11 @@ const Dashboard = () => {
           <div key={place._id} className='place-list-item'>
             {place.photos && place.photos.length > 0 && (
               <div className='list-item-image'>
-                <img src={place.photos[0].url} alt={place.title} />
+                <img src={place.photos[0].url} alt={place.name} />
               </div>
             )}
             <div className='list-item-content'>
-              <h3>{place.name || place.title}</h3>
+              <h3>{place.name}</h3>
               {place.description && (
                 <p>{stripHtml(place.description).substring(0, 200)}...</p>
               )}

@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useSearchParams } from 'react-router-dom'
-import axios from 'axios'
+import { api } from '../../services/api'
+import { useConfirm } from '../../components/UI/ConfirmDialogProvider'
+import { useToast } from '../../components/UI/ToastContainer'
 import {
   UserIcon,
   CheckCircleIcon,
@@ -13,11 +15,11 @@ import {
 } from '@heroicons/react/24/outline'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { formatDateTime } from '../../utils/dateFormatter'
-import { API_URL } from '../../config/api'
 import './AdminDashboard.css'
 
 const AdminDashboard = () => {
-  const { token } = useSelector((state) => state.auth)
+  const { confirm } = useConfirm()
+  const toast = useToast()
   const [searchParams, setSearchParams] = useSearchParams()
   const [pendingUsers, setPendingUsers] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -30,69 +32,67 @@ const AdminDashboard = () => {
     pages: 0
   })
 
-  const fetchPendingUsers = useCallback(async () => {
+  const fetchPendingUsers = useCallback(async (signal) => {
     try {
       setIsLoading(true)
       setError(null)
-      const response = await axios.get(
-        `${API_URL}/api/users/admin/pending?page=${pagination.page}&limit=${pagination.limit}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
-      setPendingUsers(response.data.users)
-      setPagination(response.data.pagination)
+      const response = await api.admin.fetchPendingUsers({
+        page: pagination.page,
+        limit: pagination.limit
+      })
+      if (!signal?.aborted) {
+        setPendingUsers(response.data.users)
+        setPagination(response.data.pagination)
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch pending users')
+      if (!signal?.aborted) {
+        setError(err.response?.data?.message || 'Failed to fetch pending users')
+      }
     } finally {
-      setIsLoading(false)
+      if (!signal?.aborted) {
+        setIsLoading(false)
+      }
     }
-  }, [pagination.page, pagination.limit, token])
+  }, [pagination.page, pagination.limit])
 
   useEffect(() => {
-    fetchPendingUsers()
+    const abortController = new AbortController()
+    fetchPendingUsers(abortController.signal)
+    return () => abortController.abort()
   }, [fetchPendingUsers])
 
   const handleApprove = async (userId) => {
-    if (!window.confirm('Are you sure you want to approve this user?')) {
-      return
-    }
+    const confirmed = await confirm('Approve this user?')
+    if (!confirmed) return
 
     try {
       setProcessingUserId(userId)
-      await axios.put(
-        `${API_URL}/api/users/admin/approve/${userId}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
+      await api.admin.approveUser(userId)
       setPendingUsers(pendingUsers.filter(user => user._id !== userId))
       setPagination(prev => ({ ...prev, total: prev.total - 1 }))
+      toast.success('User approved successfully')
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to approve user')
+      toast.error(err.response?.data?.message || 'Failed to approve user')
     } finally {
       setProcessingUserId(null)
     }
   }
 
   const handleReject = async (userId) => {
-    if (!window.confirm('Are you sure you want to reject and DELETE this user? This action cannot be undone.')) {
-      return
-    }
+    const confirmed = await confirm(
+      'Reject and DELETE this user?',
+      'This action cannot be undone.'
+    )
+    if (!confirmed) return
 
     try {
       setProcessingUserId(userId)
-      await axios.delete(
-        `${API_URL}/api/users/admin/reject/${userId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
+      await api.admin.rejectUser(userId)
       setPendingUsers(pendingUsers.filter(user => user._id !== userId))
       setPagination(prev => ({ ...prev, total: prev.total - 1 }))
+      toast.success('User rejected and deleted')
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to reject user')
+      toast.error(err.response?.data?.message || 'Failed to reject user')
     } finally {
       setProcessingUserId(null)
     }

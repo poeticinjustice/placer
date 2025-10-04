@@ -26,7 +26,7 @@ import './UserManagement.css'
 
 const UserManagement = () => {
   const dispatch = useDispatch()
-  const confirm = useConfirm()
+  const { confirm } = useConfirm()
   const toast = useToast()
 
   const { user: currentUser } = useSelector((state) => state.auth)

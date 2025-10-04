@@ -318,11 +318,11 @@ const Profile = () => {
                             <Link to={`/place/${place._id}`} key={place._id} className="place-card">
                               {place.photos && place.photos.length > 0 && (
                                 <div className="place-image">
-                                  <img src={place.photos[0].url} alt={place.title} />
+                                  <img src={place.photos[0].url} alt={place.name} />
                                 </div>
                               )}
                               <div className="place-content">
-                                <h3>{place.title}</h3>
+                                <h3>{place.name}</h3>
                                 {place.description && (
                                   <p className="place-description">
                                     {stripHtml(place.description).length > 100

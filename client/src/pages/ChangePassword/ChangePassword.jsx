@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { LockClosedIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { api } from '../../services/api'
 import { handleApiError } from '../../utils/apiErrorHandler'
@@ -10,6 +11,7 @@ import './ChangePassword.css'
 const ChangePassword = () => {
   const navigate = useNavigate()
   const toast = useToast()
+  const { user } = useSelector((state) => state.auth)
 
   const [formData, setFormData] = useState({
     currentPassword: '',
@@ -87,6 +89,17 @@ const ChangePassword = () => {
           {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleSubmit} className="change-password-form">
+            {/* Hidden username field for accessibility */}
+            <input
+              type="text"
+              name="username"
+              autoComplete="username"
+              value={user?.email || ''}
+              readOnly
+              style={{ display: 'none' }}
+              aria-hidden="true"
+            />
+
             <FormInput
               label="Current Password"
               type="password"

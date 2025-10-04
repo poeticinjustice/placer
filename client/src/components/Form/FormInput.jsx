@@ -15,9 +15,35 @@ const FormInput = ({
   minLength,
   maxLength,
   className = '',
+  autoComplete,
   ...rest
 }) => {
   const inputId = `form-input-${name}`
+
+  // Auto-determine autocomplete if not provided
+  const getAutoComplete = () => {
+    if (autoComplete !== undefined) return autoComplete
+
+    // Map common field names to autocomplete values
+    const autocompleteMap = {
+      email: 'email',
+      password: 'current-password',
+      newPassword: 'new-password',
+      currentPassword: 'current-password',
+      confirmPassword: 'new-password',
+      firstName: 'given-name',
+      lastName: 'family-name',
+      name: 'name',
+      phone: 'tel',
+      address: 'street-address',
+      city: 'address-level2',
+      state: 'address-level1',
+      zip: 'postal-code',
+      country: 'country-name'
+    }
+
+    return autocompleteMap[name] || 'off'
+  }
 
   return (
     <div className={`form-input ${className} ${error ? 'form-input--error' : ''}`}>
@@ -39,6 +65,7 @@ const FormInput = ({
         disabled={disabled}
         minLength={minLength}
         maxLength={maxLength}
+        autoComplete={getAutoComplete()}
         className="form-input__field"
         aria-invalid={error ? 'true' : 'false'}
         aria-describedby={error ? `${inputId}-error` : helpText ? `${inputId}-help` : undefined}
@@ -73,7 +100,8 @@ FormInput.propTypes = {
   helpText: PropTypes.string,
   minLength: PropTypes.number,
   maxLength: PropTypes.number,
-  className: PropTypes.string
+  className: PropTypes.string,
+  autoComplete: PropTypes.string
 }
 
 export default FormInput

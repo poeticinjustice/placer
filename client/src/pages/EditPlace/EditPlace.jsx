@@ -1,17 +1,18 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
-import axios from 'axios'
+import { api } from '../../services/api'
+import { useToast } from '../../components/UI/ToastContainer'
 import { updatePlace } from '../../store/slices/placesSlice'
 import PlaceForm from '../../components/PlaceForm/PlaceForm'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
-import { API_URL } from '../../config/api'
 import './EditPlace.css'
 
 const EditPlace = () => {
   const { id } = useParams()
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const toast = useToast()
   const { isLoading, error } = useSelector((state) => state.places)
   const { user } = useSelector((state) => state.auth)
 
@@ -22,48 +23,58 @@ const EditPlace = () => {
 
   const isAdmin = user?.role === 'admin'
 
-  const fetchPlace = useCallback(async () => {
-    try {
-      setLoadingPlace(true)
-      const response = await axios.get(`${API_URL}/api/places/${id}`)
-      const fetchedPlace = response.data.place
-
-      // Check if user is authorized to edit
-      // Handle both user.id (from auth state) and user._id
-      const userId = user.id || user._id
-      const authorId = fetchedPlace.author?._id || fetchedPlace.author
-
-      if (authorId !== userId && !isAdmin) {
-        alert('You are not authorized to edit this place')
-        navigate(`/place/${id}`)
-        return
-      }
-
-      setPlace(fetchedPlace)
-      setInitialData({
-        title: fetchedPlace.name,
-        description: fetchedPlace.description || '',
-        location: fetchedPlace.location ? {
-          address: fetchedPlace.location.address,
-          coordinates: fetchedPlace.location.coordinates,
-          latitude: fetchedPlace.location.coordinates?.[1],
-          longitude: fetchedPlace.location.coordinates?.[0]
-        } : null,
-        tags: fetchedPlace.tags ? fetchedPlace.tags.join(', ') : '',
-        isFeatured: fetchedPlace.isFeatured || false
-      })
-      setExistingPhotos(fetchedPlace.photos || [])
-    } catch (err) {
-      alert('Failed to load place')
-      navigate('/dashboard')
-    } finally {
-      setLoadingPlace(false)
-    }
-  }, [id, user, isAdmin, navigate])
-
   useEffect(() => {
-    fetchPlace()
-  }, [fetchPlace])
+    let isMounted = true
+
+    const loadPlace = async () => {
+      try {
+        setLoadingPlace(true)
+        const response = await api.places.get(id)
+        const fetchedPlace = response.data.place
+
+        if (!isMounted) return
+
+        // Check if user is authorized to edit
+        const userId = user.id || user._id
+        const authorId = fetchedPlace.author?._id || fetchedPlace.author
+
+        if (authorId !== userId && !isAdmin) {
+          toast.error('You are not authorized to edit this place')
+          navigate(`/place/${id}`)
+          return
+        }
+
+        setPlace(fetchedPlace)
+        setInitialData({
+          title: fetchedPlace.name,
+          description: fetchedPlace.description || '',
+          location: fetchedPlace.location ? {
+            address: fetchedPlace.location.address,
+            latitude: fetchedPlace.location.coordinates?.[1],
+            longitude: fetchedPlace.location.coordinates?.[0]
+          } : null,
+          tags: fetchedPlace.tags ? fetchedPlace.tags.join(', ') : '',
+          isFeatured: fetchedPlace.isFeatured || false
+        })
+        setExistingPhotos(fetchedPlace.photos || [])
+      } catch (err) {
+        if (isMounted) {
+          toast.error('Failed to load place')
+          navigate('/dashboard')
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingPlace(false)
+        }
+      }
+    }
+
+    loadPlace()
+
+    return () => {
+      isMounted = false
+    }
+  }, [id, user, isAdmin, navigate, toast])
 
   const handleSubmit = async ({ formData, imageFiles, existingPhotos: updatedExistingPhotos }) => {
     // Create FormData for file upload

@@ -36,7 +36,7 @@ const PlaceCard = ({
           <>
             <img
               src={place.photos[0].url}
-              alt={place.title || place.name}
+              alt={place.name}
               loading="lazy"
               className="place-image"
             />
@@ -59,14 +59,14 @@ const PlaceCard = ({
           /* Minimal variant: only show title */
           <div className="place-card__header">
             <h3 className="place-card__title">
-              {place.title || place.name}
+              {place.name}
             </h3>
           </div>
         ) : (
           <>
             <div className="place-card__header">
               <h3 className="place-card__title">
-                {place.title || place.name}
+                {place.name}
               </h3>
 
               {place.location?.address && (
