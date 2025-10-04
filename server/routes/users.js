@@ -12,7 +12,6 @@ router.get('/profile', authenticate, async (req, res) => {
     const user = await User.findById(req.user._id)
     res.json({ user })
   } catch (error) {
-    console.error('Get profile error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -50,7 +49,6 @@ router.put('/profile', authenticate, uploadSingleMiddleware, [
       user
     })
   } catch (error) {
-    console.error('Update profile error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -88,7 +86,6 @@ router.get('/places', authenticate, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('Get user places error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -146,7 +143,6 @@ router.get('/comments', authenticate, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('Get user comments error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -183,7 +179,6 @@ router.get('/:id', async (req, res) => {
       recentPlaces: places
     })
   } catch (error) {
-    console.error('Get user error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -215,7 +210,6 @@ router.get('/admin/all', authenticate, requireAdmin, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('Get all users error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -247,7 +241,6 @@ router.get('/admin/pending', authenticate, requireAdmin, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('Get pending users error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -269,7 +262,6 @@ router.put('/admin/approve/:id', authenticate, requireAdmin, async (req, res) =>
       user
     })
   } catch (error) {
-    console.error('Approve user error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -291,7 +283,6 @@ router.delete('/admin/reject/:id', authenticate, requireAdmin, async (req, res) 
 
     res.json({ message: 'User rejected and deleted successfully' })
   } catch (error) {
-    console.error('Reject user error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -320,7 +311,6 @@ router.put('/admin/toggle-admin/:id', authenticate, requireAdmin, async (req, re
       user: updatedUser
     })
   } catch (error) {
-    console.error('Toggle admin error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })

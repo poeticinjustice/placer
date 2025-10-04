@@ -14,7 +14,7 @@
  *       },
  *       successMessage: 'Action completed!',
  *       errorMessage: 'Action failed',
- *       onSuccess: (result) => console.log(result)
+ *       onSuccess: (result) => { /* handle result */ }
  *     })
  *   }
  */
@@ -61,8 +61,6 @@ export const useAsyncAction = () => {
 
       return { success: true, data: result }
     } catch (error) {
-      console.error('Action error:', error)
-
       // Show error toast
       const message = error || errorMessage || 'An error occurred'
       toast.error(message)

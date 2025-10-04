@@ -49,7 +49,6 @@ const CreatePlace = () => {
       const result = await dispatch(createPlace(submitData)).unwrap()
       navigate(`/place/${result.place._id}`)
     } catch (error) {
-      console.error('Error creating place:', error)
     }
   }
 

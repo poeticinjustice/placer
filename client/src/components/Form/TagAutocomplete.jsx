@@ -30,7 +30,6 @@ const TagAutocomplete = ({ value, onChange, placeholder = 'Search tags...', help
         const data = await response.json()
         setAvailableTags(data.tags || [])
       } catch (error) {
-        console.error('Error fetching tags:', error)
       }
     }
     fetchTags()

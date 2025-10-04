@@ -19,7 +19,6 @@ router.get('/tags', async (req, res) => {
     ])
     res.json({ tags })
   } catch (error) {
-    console.error('Fetch tags error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -130,7 +129,6 @@ router.get('/', async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('Fetch places error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -155,9 +153,6 @@ router.get('/:id', async (req, res) => {
 
     res.json({ place })
   } catch (error) {
-    console.error('Fetch place error:', error)
-    console.error('Error details:', error.message)
-    console.error('Stack:', error.stack)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -186,14 +181,9 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
 ], async (req, res) => {
   try {
     // Debug: log what server receives
-    console.log('=== CREATE PLACE REQUEST ===')
-    console.log('Body:', req.body)
-    console.log('Files:', req.files)
-    console.log('============================')
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      console.log('Validation errors:', errors.array())
       return res.status(400).json({
         message: 'Validation failed',
         errors: errors.array()
@@ -235,7 +225,6 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
           type: 'Point',
           coordinates: coordinates
         }
-        console.log('Processed location structure:', processedBody.location)
       }
     } else if (!req.body.location || !req.body.location.coordinates) {
       // Remove location if not provided
@@ -270,7 +259,6 @@ router.post('/', authenticate, requireApproval, uploadMiddleware, [
       place: populatedPlace
     })
   } catch (error) {
-    console.error('Create place error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -299,7 +287,6 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
       try {
         photos = JSON.parse(req.body.existingPhotos)
       } catch (e) {
-        console.error('Error parsing existing photos:', e)
         photos = []
       }
     }
@@ -364,7 +351,6 @@ router.put('/:id', authenticate, uploadMiddleware, async (req, res) => {
       place: updatedPlace
     })
   } catch (error) {
-    console.error('Update place error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -395,7 +381,6 @@ router.delete('/:id', authenticate, async (req, res) => {
 
     res.json({ message: 'Place deleted successfully' })
   } catch (error) {
-    console.error('Delete place error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -428,7 +413,6 @@ router.post('/:id/like', authenticate, async (req, res) => {
       isLiked: !existingLike
     })
   } catch (error) {
-    console.error('Like place error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -470,7 +454,6 @@ router.post('/:id/comments', authenticate, [
       comment: newComment
     })
   } catch (error) {
-    console.error('Add comment error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -505,7 +488,6 @@ router.delete('/:id/comments/:commentId', authenticate, async (req, res) => {
 
     res.json({ message: 'Comment deleted successfully' })
   } catch (error) {
-    console.error('Delete comment error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -530,7 +512,6 @@ router.patch('/:id/featured', authenticate, async (req, res) => {
       isFeatured: place.isFeatured
     })
   } catch (error) {
-    console.error('Toggle featured error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })

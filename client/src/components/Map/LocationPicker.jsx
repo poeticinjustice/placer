@@ -55,7 +55,6 @@ const LocationPicker = ({
         coordinates: [latlng.lng, latlng.lat] // GeoJSON format
       })
     } catch (error) {
-      console.error('Error getting address:', error)
       onLocationChange({
         ...location,
         coordinates: [latlng.lng, latlng.lat]
@@ -72,7 +71,6 @@ const LocationPicker = ({
       const results = await geolocationService.forwardGeocode(searchQuery)
       setSearchResults(results.slice(0, 5)) // Limit to 5 results
     } catch (error) {
-      console.error('Search error:', error)
       setSearchResults([])
     }
     setIsSearching(false)
@@ -116,14 +114,12 @@ const LocationPicker = ({
           coordinates: [position.longitude, position.latitude]
         })
       } catch (error) {
-        console.error('Error getting address:', error)
         onLocationChange({
           ...location,
           coordinates: [position.longitude, position.latitude]
         })
       }
     } catch (error) {
-      console.error('Error getting current location:', error)
       alert(error.message)
     }
     setIsGettingLocation(false)

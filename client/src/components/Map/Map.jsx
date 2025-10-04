@@ -55,7 +55,6 @@ const LocationMarker = ({ showUserLocation, onLocationFound }) => {
           onLocationFound?.(pos)
         })
         .catch((error) => {
-          console.error('Error getting location:', error)
         })
         .finally(() => {
           setIsLoading(false)

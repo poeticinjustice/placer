@@ -54,7 +54,6 @@ const EditPlace = () => {
       })
       setExistingPhotos(fetchedPlace.photos || [])
     } catch (err) {
-      console.error('Error fetching place:', err)
       alert('Failed to load place')
       navigate('/dashboard')
     } finally {
@@ -103,7 +102,6 @@ const EditPlace = () => {
       const result = await dispatch(updatePlace({ placeId: id, placeData: submitData })).unwrap()
       navigate(`/place/${result.place._id}`)
     } catch (error) {
-      console.error('Error updating place:', error)
     }
   }
 

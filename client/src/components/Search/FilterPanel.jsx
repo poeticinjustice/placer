@@ -40,7 +40,7 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
         const data = await response.json()
         setAvailableTags(data.tags || [])
       } catch (error) {
-        console.error('Error fetching tags:', error)
+        // Silent fail - tags are optional
       }
     }
     if (isOpen) {
@@ -84,7 +84,6 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
       handleFilterChange('useDistance', true)
     } catch (error) {
       setLocationError(error.message)
-      console.error('Location error:', error)
     } finally {
       setLocationLoading(false)
     }

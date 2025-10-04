@@ -92,7 +92,7 @@ const Profile = () => {
       setIsEditing(false)
       setPreviewUrl(null)
     } catch (error) {
-      console.error('Failed to update profile:', error)
+      // Error is handled by Redux and shown in UI
     }
   }
 

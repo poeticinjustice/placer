@@ -43,7 +43,6 @@ const AdminDashboard = () => {
       setPendingUsers(response.data.users)
       setPagination(response.data.pagination)
     } catch (err) {
-      console.error('Error fetching pending users:', err)
       setError(err.response?.data?.message || 'Failed to fetch pending users')
     } finally {
       setIsLoading(false)
@@ -71,7 +70,6 @@ const AdminDashboard = () => {
       setPendingUsers(pendingUsers.filter(user => user._id !== userId))
       setPagination(prev => ({ ...prev, total: prev.total - 1 }))
     } catch (err) {
-      console.error('Error approving user:', err)
       alert(err.response?.data?.message || 'Failed to approve user')
     } finally {
       setProcessingUserId(null)
@@ -94,7 +92,6 @@ const AdminDashboard = () => {
       setPendingUsers(pendingUsers.filter(user => user._id !== userId))
       setPagination(prev => ({ ...prev, total: prev.total - 1 }))
     } catch (err) {
-      console.error('Error rejecting user:', err)
       alert(err.response?.data?.message || 'Failed to reject user')
     } finally {
       setProcessingUserId(null)

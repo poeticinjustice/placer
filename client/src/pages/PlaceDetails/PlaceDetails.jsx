@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+import DOMPurify from 'dompurify'
 import {
   MapPinIcon,
   CalendarDaysIcon,
@@ -26,7 +27,7 @@ const PlaceDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const confirm = useConfirm()
+  const { confirm } = useConfirm()
   const toast = useToast()
 
   const { user, isAuthenticated } = useSelector((state) => state.auth)
@@ -260,7 +261,7 @@ const PlaceDetails = () => {
             <div className="place-description">
               <h2>About this place</h2>
               {place.description ? (
-                <div dangerouslySetInnerHTML={{ __html: place.description }} />
+                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(place.description) }} />
               ) : (
                 <p>No description provided</p>
               )}
@@ -320,12 +321,6 @@ const PlaceDetails = () => {
         <CommentSection
           placeId={id}
           initialComments={place.comments || []}
-          onCommentAdded={(comment) => {
-            setPlace({ ...place, comments: [...(place.comments || []), comment] })
-          }}
-          onCommentDeleted={(commentId) => {
-            setPlace({ ...place, comments: place.comments.filter(c => c._id !== commentId) })
-          }}
         />
       </div>
 

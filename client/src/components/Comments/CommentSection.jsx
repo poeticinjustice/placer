@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
+import DOMPurify from 'dompurify'
 import {
   ChatBubbleLeftIcon,
   TrashIcon,
@@ -16,7 +17,7 @@ import './CommentSection.css'
 
 const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onCommentDeleted }) => {
   const { user, isAuthenticated } = useSelector((state) => state.auth)
-  const confirm = useConfirm()
+  const { confirm } = useConfirm()
   const toast = useToast()
 
   const [comments, setComments] = useState(initialComments)
@@ -176,7 +177,7 @@ const CommentSection = ({ placeId, initialComments = [], onCommentAdded, onComme
 
                 <div
                   className="comment-text"
-                  dangerouslySetInnerHTML={{ __html: comment.content }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.content) }}
                 />
               </div>
             </div>

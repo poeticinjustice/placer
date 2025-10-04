@@ -11,7 +11,7 @@ const loadAuthState = () => {
       return { token, user, isAuthenticated: !!token, isLoading: !!token }
     }
   } catch (e) {
-    console.error('Error loading auth state:', e)
+    // Clear corrupted auth data
     localStorage.removeItem('auth')
   }
   return { token: null, user: null, isAuthenticated: false, isLoading: false }
@@ -61,7 +61,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
   try {
     await api.auth.logout()
   } catch (error) {
-    console.error('Logout error:', error)
+    // Silent fail on logout - user is already logging out
   }
   return null
 })

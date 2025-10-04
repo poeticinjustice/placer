@@ -31,7 +31,8 @@ apiClient.interceptors.request.use(
         const authData = JSON.parse(persistedAuth)
         token = authData.token
       } catch (e) {
-        console.error('Error parsing auth token:', e)
+        // Silent fail - corrupted auth data, will be cleared
+        localStorage.removeItem('auth')
       }
     }
 
@@ -41,7 +42,6 @@ apiClient.interceptors.request.use(
 
       // Migrate old token to new format
       if (token) {
-        console.log('Migrating old token format to new auth format')
         localStorage.setItem('auth', JSON.stringify({ token, user: null }))
         localStorage.removeItem('token')
       }

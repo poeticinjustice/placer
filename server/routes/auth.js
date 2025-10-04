@@ -50,7 +50,6 @@ router.post('/signup', [
 
     // Send email notification (non-blocking)
     sendSignupNotification(user).catch(err => {
-      console.error('Failed to send signup notification:', err)
     })
 
     res.status(201).json({
@@ -69,7 +68,6 @@ router.post('/signup', [
       }
     })
   } catch (error) {
-    console.error('Signup error:', error)
     res.status(500).json({ message: 'Server error during signup' })
   }
 })
@@ -120,7 +118,6 @@ router.post('/login', [
       }
     })
   } catch (error) {
-    console.error('Login error:', error)
     res.status(500).json({ message: 'Server error during login' })
   }
 })
@@ -145,7 +142,6 @@ router.get('/me', authenticate, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('Get user error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -190,7 +186,6 @@ router.put('/change-password', authenticate, [
 
     res.json({ message: 'Password changed successfully' })
   } catch (error) {
-    console.error('Change password error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })
