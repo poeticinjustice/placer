@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import LocationPicker from '../Map/LocationPicker'
 import LoadingSpinner from '../UI/LoadingSpinner'
 import { FormInput, FormCheckbox, FormFileInput } from '../Form'
 import TiptapEditor from '../Editor/TiptapEditor'
 import TagAutocomplete from '../Form/TagAutocomplete'
+import { useToast } from '../UI/ToastContainer'
 import './PlaceForm.css'
 
 const PlaceForm = ({
@@ -19,39 +20,55 @@ const PlaceForm = ({
   showFeaturedToggle = false,
   showAnonymousOption = true
 }) => {
-  const [formData, setFormData] = useState({
+  const toast = useToast()
+  const [formData, setFormData] = useState(() => ({
     title: initialData?.title || '',
     description: initialData?.description || '',
     location: initialData?.location || null,
     tags: initialData?.tags || '',
     isAnonymous: initialData?.isAnonymous || false,
     isFeatured: initialData?.isFeatured || false
-  })
+  }))
 
   const [imageFiles, setImageFiles] = useState([])
   const [imagePreviews, setImagePreviews] = useState([])
-  const [currentExistingPhotos, setCurrentExistingPhotos] = useState([])
+  const [currentExistingPhotos, setCurrentExistingPhotos] = useState(existingPhotos || [])
 
-  // Update form data and existing photos when props change (for edit mode)
+  // Track if user has made any changes to prevent resetting during edits
+  const hasUserEdited = useRef(false)
+  const previousInitialData = useRef(initialData)
+  const previousPhotosLength = useRef(existingPhotos.length)
+
+  // Only sync with initialData when it actually changes (not during user edits)
   useEffect(() => {
-    if (initialData) {
+    const initialDataChanged = previousInitialData.current !== initialData
+
+    if (initialDataChanged && !hasUserEdited.current) {
       setFormData({
-        title: initialData.title || '',
-        description: initialData.description || '',
-        location: initialData.location || null,
-        tags: initialData.tags || '',
-        isAnonymous: initialData.isAnonymous || false,
-        isFeatured: initialData.isFeatured || false
+        title: initialData?.title || '',
+        description: initialData?.description || '',
+        location: initialData?.location || null,
+        tags: initialData?.tags || '',
+        isAnonymous: initialData?.isAnonymous || false,
+        isFeatured: initialData?.isFeatured || false
       })
+      previousInitialData.current = initialData
     }
-    // Only update existing photos if they're actually provided (not empty array)
-    if (existingPhotos && existingPhotos.length > 0) {
-      setCurrentExistingPhotos(existingPhotos)
+  }, [initialData])
+
+  // Sync existingPhotos only when the length changes (avoid infinite loop from array reference changes)
+  useEffect(() => {
+    const photosLength = existingPhotos?.length || 0
+    if (photosLength !== previousPhotosLength.current) {
+      setCurrentExistingPhotos(existingPhotos || [])
+      previousPhotosLength.current = photosLength
     }
-  }, [initialData, existingPhotos])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [existingPhotos?.length])
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
+    hasUserEdited.current = true
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -59,6 +76,7 @@ const PlaceForm = ({
   }
 
   const handleLocationChange = (location) => {
+    hasUserEdited.current = true
     setFormData(prev => ({
       ...prev,
       location
@@ -96,9 +114,11 @@ const PlaceForm = ({
     e.preventDefault()
 
     if (!formData.title.trim()) {
-      alert('Please enter a title for your place')
+      toast.error('Please enter a title for your place')
       return
     }
+
+    // Description, location, and photos are now optional
 
     // Pass data to parent component for submission
     onSubmit({

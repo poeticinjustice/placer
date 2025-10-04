@@ -5,6 +5,7 @@ import { updateUserProfile } from '../../store/slices/authSlice'
 import { fetchUserPlaces, fetchUserComments } from '../../store/slices/userSlice'
 import LoadingSpinner from '../../components/UI/LoadingSpinner'
 import { formatDate } from '../../utils/dateFormatter'
+import { stripHtml } from '../../utils/htmlUtils'
 import { FormInput, FormTextarea } from '../../components/Form'
 import Tabs from '../../components/UI/Tabs'
 import {
@@ -24,14 +25,6 @@ import {
 import './Profile.css'
 
 const Profile = () => {
-  const stripHtml = (html) => {
-    if (!html) return ''
-    const tmp = document.createElement('div')
-    tmp.innerHTML = html
-    const text = tmp.textContent || tmp.innerText || ''
-    return text.trim()
-  }
-
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { user, isLoading: authLoading, error: authError } = useSelector((state) => state.auth)

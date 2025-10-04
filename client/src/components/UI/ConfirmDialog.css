@@ -1,0 +1,149 @@
+.confirm-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.confirm-dialog {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.confirm-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.confirm-dialog-icon {
+  width: 32px;
+  height: 32px;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.confirm-dialog-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.confirm-dialog-body {
+  margin-bottom: 24px;
+}
+
+.confirm-dialog-message {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b7280;
+  margin: 0;
+}
+
+.confirm-dialog-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.confirm-dialog-footer .btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .confirm-dialog-overlay {
+    background: rgba(0, 0, 0, 0.75);
+  }
+
+  .confirm-dialog {
+    background: var(--dark-background-tertiary);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
+                0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  }
+
+  .confirm-dialog-title {
+    color: var(--dark-label-primary);
+  }
+
+  .confirm-dialog-message {
+    color: var(--dark-label-secondary);
+  }
+
+  .btn-secondary {
+    background: var(--dark-background-secondary);
+    color: var(--dark-label-primary);
+  }
+
+  .btn-secondary:hover {
+    background: var(--dark-background-primary);
+  }
+}

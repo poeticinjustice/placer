@@ -1,0 +1,134 @@
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+  min-width: 320px;
+  max-width: 500px;
+  background: white;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.toast-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.toast-close .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Toast types */
+.toast-success {
+  background: #ecfdf5;
+  border-left: 4px solid #10b981;
+  color: #065f46;
+}
+
+.toast-success .toast-icon {
+  color: #10b981;
+}
+
+.toast-error {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+}
+
+.toast-error .toast-icon {
+  color: #ef4444;
+}
+
+.toast-warning {
+  background: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  color: #92400e;
+}
+
+.toast-warning .toast-icon {
+  color: #f59e0b;
+}
+
+.toast-info {
+  background: #eff6ff;
+  border-left: 4px solid #3b82f6;
+  color: #1e40af;
+}
+
+.toast-info .toast-icon {
+  color: #3b82f6;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .toast {
+    background: var(--dark-background-tertiary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  .toast-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .toast-success {
+    background: rgba(16, 185, 129, 0.15);
+    border-left: 4px solid #10b981;
+    color: #6ee7b7;
+  }
+
+  .toast-error {
+    background: rgba(239, 68, 68, 0.15);
+    border-left: 4px solid #ef4444;
+    color: #fca5a5;
+  }
+
+  .toast-warning {
+    background: rgba(245, 158, 11, 0.15);
+    border-left: 4px solid #f59e0b;
+    color: #fcd34d;
+  }
+
+  .toast-info {
+    background: rgba(59, 130, 246, 0.15);
+    border-left: 4px solid #3b82f6;
+    color: #93c5fd;
+  }
+}

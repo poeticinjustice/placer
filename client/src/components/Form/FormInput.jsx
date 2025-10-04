@@ -1,24 +1,6 @@
+import PropTypes from 'prop-types'
 import './FormInput.css'
 
-/**
- * FormInput Component
- * Reusable input field with label, validation, and error display
- *
- * @param {string} label - Label text for the input
- * @param {string} type - Input type (text, email, password, number, etc.)
- * @param {string} name - Input name attribute
- * @param {string} value - Input value
- * @param {function} onChange - Change handler function
- * @param {string} placeholder - Placeholder text
- * @param {boolean} required - Whether field is required
- * @param {boolean} disabled - Whether field is disabled
- * @param {string} error - Error message to display
- * @param {string} helpText - Help text to display below input
- * @param {number} minLength - Minimum length for validation
- * @param {number} maxLength - Maximum length for validation
- * @param {string} className - Additional CSS classes
- * @param {object} ...rest - Any other input attributes
- */
 const FormInput = ({
   label,
   type = 'text',
@@ -76,6 +58,22 @@ const FormInput = ({
       )}
     </div>
   )
+}
+
+FormInput.propTypes = {
+  label: PropTypes.string,
+  type: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  required: PropTypes.bool,
+  disabled: PropTypes.bool,
+  error: PropTypes.string,
+  helpText: PropTypes.string,
+  minLength: PropTypes.number,
+  maxLength: PropTypes.number,
+  className: PropTypes.string
 }
 
 export default FormInput

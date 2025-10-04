@@ -1,19 +1,6 @@
+import PropTypes from 'prop-types'
 import './FormCheckbox.css'
 
-/**
- * FormCheckbox Component
- * Reusable checkbox field with label and error display
- *
- * @param {string} label - Label text for the checkbox
- * @param {string} name - Checkbox name attribute
- * @param {boolean} checked - Checkbox checked state
- * @param {function} onChange - Change handler function
- * @param {boolean} disabled - Whether checkbox is disabled
- * @param {string} error - Error message to display
- * @param {string} helpText - Help text to display
- * @param {string} className - Additional CSS classes
- * @param {object} ...rest - Any other input attributes
- */
 const FormCheckbox = ({
   label,
   name,
@@ -58,6 +45,17 @@ const FormCheckbox = ({
       )}
     </div>
   )
+}
+
+FormCheckbox.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  checked: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  error: PropTypes.string,
+  helpText: PropTypes.string,
+  className: PropTypes.string
 }
 
 export default FormCheckbox

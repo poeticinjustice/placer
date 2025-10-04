@@ -1,6 +1,8 @@
+import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { MapPinIcon, HeartIcon } from '@heroicons/react/24/outline'
 import { formatDateShort } from '../../utils/dateFormatter'
+import { stripHtml } from '../../utils/htmlUtils'
 import './PlaceCard.css'
 
 const PlaceCard = ({
@@ -14,14 +16,6 @@ const PlaceCard = ({
   const getAuthorName = () => {
     if (place.isAnonymous || !place.author) return 'Anonymous'
     return `${place.author.firstName} ${place.author.lastName || ''}`.trim()
-  }
-
-  const stripHtml = (html) => {
-    if (!html) return ''
-    const tmp = document.createElement('div')
-    tmp.innerHTML = html
-    const text = tmp.textContent || tmp.innerText || ''
-    return text.trim()
   }
 
   const cardClasses = [
@@ -127,6 +121,35 @@ const PlaceCard = ({
       </div>
     </Link>
   )
+}
+
+PlaceCard.propTypes = {
+  place: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string,
+    photos: PropTypes.arrayOf(PropTypes.shape({
+      url: PropTypes.string.isRequired
+    })),
+    location: PropTypes.shape({
+      address: PropTypes.string,
+      coordinates: PropTypes.arrayOf(PropTypes.number)
+    }),
+    author: PropTypes.shape({
+      firstName: PropTypes.string,
+      lastName: PropTypes.string,
+      avatar: PropTypes.string
+    }),
+    isAnonymous: PropTypes.bool,
+    likesCount: PropTypes.number,
+    createdAt: PropTypes.string
+  }).isRequired,
+  variant: PropTypes.oneOf(['default', 'compact', 'minimal']),
+  showAuthor: PropTypes.bool,
+  showStats: PropTypes.bool,
+  showDescription: PropTypes.bool,
+  className: PropTypes.string
 }
 
 export default PlaceCard

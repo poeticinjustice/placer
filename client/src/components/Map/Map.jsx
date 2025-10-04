@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaf
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { geolocationService } from '../../services/geolocation'
+import { stripHtml } from '../../utils/htmlUtils'
 import './Map.css'
 
 // Fix for default markers in react-leaflet
@@ -91,14 +92,6 @@ const Map = ({
   className = ''
 }) => {
   const mapRef = useRef(null)
-
-  const stripHtml = (html) => {
-    if (!html) return ''
-    const tmp = document.createElement('div')
-    tmp.innerHTML = html
-    const text = tmp.textContent || tmp.innerText || ''
-    return text.trim()
-  }
 
   return (
     <div className={`map-container ${className}`} style={{ height }}>

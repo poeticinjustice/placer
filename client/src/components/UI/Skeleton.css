@@ -1,0 +1,32 @@
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #f8f8f8 50%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      #2C2C2E 0%,
+      #38383A 50%,
+      #2C2C2E 100%
+    );
+    background-size: 200% 100%;
+  }
+}

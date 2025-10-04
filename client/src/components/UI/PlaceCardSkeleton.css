@@ -1,0 +1,31 @@
+.place-card-skeleton {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.place-card-skeleton__content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.place-card-skeleton--compact .place-card-skeleton__content {
+  padding: 12px;
+  gap: 8px;
+}
+
+.place-card-skeleton--minimal .place-card-skeleton__content {
+  padding: 8px;
+  gap: 6px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .place-card-skeleton {
+    background: var(--dark-background-tertiary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+}

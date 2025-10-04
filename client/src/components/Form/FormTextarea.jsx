@@ -1,25 +1,6 @@
+import PropTypes from 'prop-types'
 import './FormTextarea.css'
 
-/**
- * FormTextarea Component
- * Reusable textarea field with label, validation, and error display
- *
- * @param {string} label - Label text for the textarea
- * @param {string} name - Textarea name attribute
- * @param {string} value - Textarea value
- * @param {function} onChange - Change handler function
- * @param {string} placeholder - Placeholder text
- * @param {boolean} required - Whether field is required
- * @param {boolean} disabled - Whether field is disabled
- * @param {string} error - Error message to display
- * @param {string} helpText - Help text to display below textarea
- * @param {number} rows - Number of visible text rows
- * @param {number} minLength - Minimum length for validation
- * @param {number} maxLength - Maximum length for validation
- * @param {boolean} showCharCount - Show character count
- * @param {string} className - Additional CSS classes
- * @param {object} ...rest - Any other textarea attributes
- */
 const FormTextarea = ({
   label,
   name,
@@ -89,6 +70,23 @@ const FormTextarea = ({
       </div>
     </div>
   )
+}
+
+FormTextarea.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  required: PropTypes.bool,
+  disabled: PropTypes.bool,
+  error: PropTypes.string,
+  helpText: PropTypes.string,
+  rows: PropTypes.number,
+  minLength: PropTypes.number,
+  maxLength: PropTypes.number,
+  showCharCount: PropTypes.bool,
+  className: PropTypes.string
 }
 
 export default FormTextarea

@@ -25,16 +25,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 import SearchBar from '../../components/Search/SearchBar';
 import usePageTitle from '../../hooks/usePageTitle';
 import FilterPanel from '../../components/Search/FilterPanel';
+import { stripHtml } from '../../utils/htmlUtils';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const stripHtml = (html) => {
-    if (!html) return ''
-    const tmp = document.createElement('div')
-    tmp.innerHTML = html
-    const text = tmp.textContent || tmp.innerText || ''
-    return text.trim()
-  }
   usePageTitle('Dashboard');
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
