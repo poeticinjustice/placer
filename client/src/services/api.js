@@ -96,6 +96,7 @@ export const api = {
   places: {
     list: (params) => apiClient.get('/api/places', { params }),
     get: (id) => apiClient.get(`/api/places/${id}`),
+    getTags: () => apiClient.get('/api/places/tags'),
     create: (formData) => apiClient.post('/api/places', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     }),

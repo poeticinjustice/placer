@@ -20,7 +20,7 @@ import { formatDate } from '../../utils/dateFormatter'
 import { useConfirm } from '../../components/UI/ConfirmDialogProvider'
 import { useToast } from '../../components/UI/ToastContainer'
 import { fetchPlaceById, deletePlace, likePlace } from '../../store/slices/placesSlice'
-import usePageTitle from '../../hooks/usePageTitle'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 import './PlaceDetails.css'
 
 const PlaceDetails = () => {
@@ -33,7 +33,7 @@ const PlaceDetails = () => {
   const { user, isAuthenticated } = useSelector((state) => state.auth)
   const { currentPlace: place, isLoading, error } = useSelector((state) => state.places)
 
-  usePageTitle(place?.name || 'Place Details')
+  useDocumentTitle(place?.name || 'Place Details')
 
   const [isLiked, setIsLiked] = useState(false)
   const [likesCount, setLikesCount] = useState(0)

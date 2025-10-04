@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { API_URL } from '../../config/api'
+import { api } from '../../services/api'
 import './TagAutocomplete.css'
 
 const TagAutocomplete = ({ value, onChange, placeholder = 'Search tags...', helpText }) => {
@@ -26,11 +26,10 @@ const TagAutocomplete = ({ value, onChange, placeholder = 'Search tags...', help
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/places/tags`)
-        const data = await response.json()
-        setAvailableTags(data.tags || [])
-      } catch {
-        // Tags are optional - fail silently if fetch errors
+        const response = await api.places.getTags()
+        setAvailableTags(response.data.tags || [])
+      } catch (error) {
+        console.error('Error fetching tags:', error)
       }
     }
     fetchTags()

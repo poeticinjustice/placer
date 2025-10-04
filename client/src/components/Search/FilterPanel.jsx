@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { XMarkIcon, MapPinIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { geolocationService } from '../../services/geolocation'
-import { API_URL } from '../../config/api'
+import { api } from '../../services/api'
 import './FilterPanel.css'
 
 const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
@@ -36,12 +36,10 @@ const FilterPanel = ({ filters, onFiltersChange, onClose, isOpen }) => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/places/tags`)
-        const data = await response.json()
-        setAvailableTags(data.tags || [])
-      } catch {
-        // Tags are optional - fail silently if fetch errors
-        // User can still use filters without tag suggestions
+        const response = await api.places.getTags()
+        setAvailableTags(response.data.tags || [])
+      } catch (error) {
+        console.error('Error fetching tags:', error)
       }
     }
     if (isOpen) {

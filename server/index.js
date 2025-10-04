@@ -15,6 +15,7 @@ import helmet from 'helmet'
 import compression from 'compression'
 import rateLimit from 'express-rate-limit'
 import connectDB from './config/database.js'
+import { RATE_LIMIT } from './config/constants.js'
 import authRoutes from './routes/auth.js'
 import placeRoutes from './routes/places.js'
 import userRoutes from './routes/users.js'
@@ -26,8 +27,8 @@ const PORT = process.env.PORT || 8000
 connectDB()
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500 // limit each IP to 500 requests per windowMs (increased from 100)
+  windowMs: RATE_LIMIT.WINDOW_MS,
+  max: RATE_LIMIT.MAX_REQUESTS
 })
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000']

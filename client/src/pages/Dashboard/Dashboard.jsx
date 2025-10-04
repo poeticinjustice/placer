@@ -23,13 +23,13 @@ import {
 } from '@heroicons/react/24/outline';
 import { Link, useSearchParams } from 'react-router-dom';
 import SearchBar from '../../components/Search/SearchBar';
-import usePageTitle from '../../hooks/usePageTitle';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 import FilterPanel from '../../components/Search/FilterPanel';
 import { stripHtml } from '../../utils/htmlUtils';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  usePageTitle('Dashboard');
+  useDocumentTitle('Dashboard');
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { places, isLoading, viewMode, searchQuery, filters, totalPages } = useSelector(
